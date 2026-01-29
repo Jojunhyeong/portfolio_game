@@ -19,7 +19,6 @@ function safeText(v?: string | null) {
 export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[] }) {
   const router = useRouter()
 
-  // ✅ UI에서도 안전하게 정렬 (featured -> order -> title)
   const sorted = useMemo(() => {
     return [...projects].sort((a, b) => {
       const af = a.featured ? 0 : 1
@@ -34,47 +33,38 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
     })
   }, [projects])
 
-  // ✅ 추천은 “상단에 먼저 보여주는 큐레이션 섹션”
   const recommended = useMemo(() => sorted.filter((p) => p.featured).slice(0, 2), [sorted])
 
-  // ✅ ALL은 진짜 전체 (추천 포함)
-  const all = sorted
-
+  // ✅ 선택은 "전체 기준" 딱 하나만
   const [selected, setSelected] = useState(0)
 
-  // ✅ slug -> element 로 안정적으로 ref 관리
-  const refMap = useRef<Record<string, HTMLAnchorElement | null>>({})
+  // ✅ ref는 섹션별로 따로 두되, 스크롤 타겟은 우선 ALL에서 찾습니다(중복 렌더라도 안정적)
+  const recRefMap = useRef<Record<string, HTMLAnchorElement | null>>({})
+  const allRefMap = useRef<Record<string, HTMLAnchorElement | null>>({})
 
+  // ✅ 첫 진입 스크롤 방지 + 키보드 이동 때만 스크롤
+  const didMountRef = useRef(false)
+  const lastInputRef = useRef<'init' | 'keyboard' | 'hover' | 'reset'>('init')
+
+  // 리스트 길이 바뀌면 첫 카드 선택(스크롤은 하지 않음)
   useEffect(() => {
+    lastInputRef.current = 'reset'
     setSelected(0)
   }, [sorted.length])
 
-  /**
-   * ✅ 핵심: StartMenu에서 넘어왔을 때 커서 위치가 유지되어,
-   * 카드가 "커서 아래에 렌더"되면 onMouseEnter가 즉시 발생 → selected 변경 → scrollIntoView 발생.
-   * 그래서 "사용자가 실제로 마우스를 움직인 후"에만 hover로 selected를 바꾸도록 가드합니다.
-   */
-  const hoverEnabledRef = useRef(false)
-  useEffect(() => {
-    const onMove = () => {
-      hoverEnabledRef.current = true
-      window.removeEventListener('pointermove', onMove)
-    }
-    window.addEventListener('pointermove', onMove, { passive: true })
-    return () => window.removeEventListener('pointermove', onMove)
-  }, [])
-
-  // ✅ 첫 렌더에서 scrollIntoView는 막고, 그 이후부터만 동작
-  const didMountRef = useRef(false)
+  // ✅ 선택이 바뀌면: "키보드일 때만" focus + scroll
   useEffect(() => {
     if (!didMountRef.current) {
       didMountRef.current = true
       return
     }
+    if (lastInputRef.current !== 'keyboard') return
 
     const item = sorted[selected]
     if (!item) return
-    const el = refMap.current[item.slug]
+
+    // ✅ 스크롤/포커스는 ALL 쪽 element가 있으면 그걸 우선
+    const el = allRefMap.current[item.slug] ?? recRefMap.current[item.slug]
     if (!el) return
 
     el.focus({ preventScroll: true })
@@ -92,21 +82,25 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
 
       if (e.key === 'ArrowDown') {
         e.preventDefault()
+        lastInputRef.current = 'keyboard'
         setSelected((i) => clamp(i + cols))
         return
       }
       if (e.key === 'ArrowUp') {
         e.preventDefault()
+        lastInputRef.current = 'keyboard'
         setSelected((i) => clamp(i - cols))
         return
       }
       if (e.key === 'ArrowRight') {
         e.preventDefault()
+        lastInputRef.current = 'keyboard'
         setSelected((i) => clamp(i + 1))
         return
       }
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
+        lastInputRef.current = 'keyboard'
         setSelected((i) => clamp(i - 1))
         return
       }
@@ -128,7 +122,7 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
 
   return (
     <div className="space-y-6">
-      {/* RECOMMENDED */}
+      {/* RECOMMENDED (선택은 전체 기준 하나, 여기서는 표시만) */}
       {recommended.length ? (
         <section className="panel p-6 md:p-8">
           <div className="flex items-start justify-between gap-4">
@@ -144,53 +138,55 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {recommended.map((p) => (
-              <ProjectCard
-                key={p.slug}
-                p={p}
-                selected={sorted[selected]?.slug === p.slug}
-                onHover={() => {
-                  // ✅ 첫 진입 시 커서가 카드 위에 있으면 mouseenter가 즉시 발생하는 문제 방지
-                  if (!hoverEnabledRef.current) return
-                  const idx = sorted.findIndex((x) => x.slug === p.slug)
-                  if (idx >= 0) setSelected(idx)
-                }}
-                ref={(el) => {
-                  refMap.current[p.slug] = el
-                }}
-              />
-            ))}
+            {recommended.map((p) => {
+              const idx = sorted.findIndex((x) => x.slug === p.slug)
+              const isSelected = idx >= 0 && selected === idx
+
+              return (
+                <ProjectCard
+                  key={p.slug}
+                  p={p}
+                  selected={isSelected}
+                  onHover={() => {
+                    if (idx < 0) return
+                    lastInputRef.current = 'hover'
+                    setSelected(idx)
+                  }}
+                  ref={(el) => {
+                    recRefMap.current[p.slug] = el
+                  }}
+                />
+              )
+            })}
           </div>
         </section>
       ) : null}
 
-      {/* ALL PROJECTS */}
+      {/* ALL (추천 포함 전체) */}
       <section className="panel p-6 md:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="text-b5 muted">ALL PROJECTS</div>
             <div className="text-h3 mt-2">전체 프로젝트</div>
             <p className="text-b3 muted mt-2 typo">
-              카드에서는 프로젝트의 성격을 한눈에 볼 수 있고, 상세 페이지에서는 역할, 문제 정의, 해결 과정을 확인할 수 있습니다.
+              카드에서는 프로젝트의 성격을 한눈에 볼 수 있고, 상세 페이지에서는 역할, 문제 정의, 해결 과정을 확인하실 수 있습니다.
             </p>
           </div>
           <div className="text-b5 muted">{sorted.length} titles</div>
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {all.map((p) => (
+          {sorted.map((p, idx) => (
             <ProjectCard
               key={p.slug}
               p={p}
-              selected={sorted[selected]?.slug === p.slug}
+              selected={selected === idx}
               onHover={() => {
-                // ✅ 첫 진입 시 커서가 카드 위에 있으면 mouseenter가 즉시 발생하는 문제 방지
-                if (!hoverEnabledRef.current) return
-                const idx = sorted.findIndex((x) => x.slug === p.slug)
-                if (idx >= 0) setSelected(idx)
+                lastInputRef.current = 'hover'
+                setSelected(idx)
               }}
               ref={(el) => {
-                refMap.current[p.slug] = el
+                allRefMap.current[p.slug] = el
               }}
             />
           ))}
@@ -229,15 +225,14 @@ const ProjectCard = forwardRef<
         'relative overflow-hidden',
       ].join(' ')}
     >
-      {/* ✅ MEDIA */}
+      {/* MEDIA */}
       <div className="relative z-10 mb-5">
         <div className="relative h-40 w-full overflow-hidden rounded-2xl border border-white/10">
           {mediaSrc ? (
             <>
-              {/* 배경 톤 */}
               <div className="absolute inset-0 bg-black/25" />
 
-              {/* ✅ 중앙 정렬 */}
+              {/* 중앙 로고 */}
               <div className="absolute inset-0 flex items-center justify-center pt-6">
                 <img
                   src={mediaSrc}
@@ -247,7 +242,6 @@ const ProjectCard = forwardRef<
                 />
               </div>
 
-              {/* HUD 하이라이트 */}
               <div
                 className="absolute -inset-12 opacity-70"
                 style={{
@@ -258,7 +252,6 @@ const ProjectCard = forwardRef<
             </>
           ) : (
             <>
-              {/* fallback */}
               <div
                 className="absolute inset-0"
                 style={{
