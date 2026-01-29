@@ -1,0 +1,37 @@
+---
+type: project
+slug: ttak
+title: TTAK
+subtitle: 공공데이터 기반 건강기능식품 안심 정보 서비스
+version: "v2.x"
+status: Endgame Patch
+featured: true   # ✅ 추가
+period:
+  start: "2025-??-??"
+  end: "2026-01-28"
+team:
+  composition: ["PM", "Designer", "Backend", "Frontend"]
+  role: "Frontend Part Leader"
+links:
+  live: "https://medilog.today/"
+  repo: "https://github.com/MedlyMediLog/MediLog-frontend"
+  blog: "https://velog.io/@jojh0323/series/%EB%A9%94%EB%94%94%EB%A1%9C%EA%B7%B8"
+  cover: "/ttak_logo.svg"
+logo: "/ttak_logo.svg"
+
+highlights:
+  - Tailwind v4 기반 디자인 시스템(타이포/브레이크포인트/유틸) 설계 및 문서화
+  - Storybook 도입으로 공통 컴포넌트 개발/검증/공유
+  - 소셜 로그인 구현(OAuth, 쿠키/도메인, CORS 포함)
+  - 이벤트 로그 설계(체류시간/퍼널) 및 지표 산출을 위한 데이터 전송 구조 설계
+tech:
+  frontend: ["Next.js(App Router)", "TypeScript", "React", "Tailwind CSS", "TanStack React Query", "Storybook"]
+  infra: ["Nginx", "PM2", "AWS EC2", "GitHub Actions"]
+  analytics: ["Stay-time events", "Funnel sessions"]
+myWork:
+  - 라우팅 구조 설계 및 공통 레이아웃/네비게이션 구조 구성
+  - 타이포그래피 시스템(@theme 기반) 설계 및 사용 규칙 문서화
+  - Storybook 기반 공통 컴포넌트 정리(상태 케이스 포함)
+  - OAuth 로그인 플로우 디버깅 및 안정화(도메인/쿠키/CORS)
+  - 프론트 측 체류시간(active/total) 측정 로직 구현
+---

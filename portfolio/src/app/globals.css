@@ -1,0 +1,363 @@
+/* src/app/globals.css */
+@import "tailwindcss";
+
+/* =========================
+   CSS VARIABLES (확정)
+   ========================= */
+:root {
+  --font-sans: "Pretendard", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+
+  /* rgb triplets */
+  --bg: 7 10 18; /* deep navy */
+  --fg: 233 240 255;
+
+  --panel: 18 24 38; /* panel base */
+  --panel-2: 12 18 30; /* deeper */
+  --muted: 148 163 184;
+
+  --accent: 168 85 247; /* purple */
+  --accent-2: 34 211 238; /* cyan */
+
+  /* typography */
+  --leading-default: 1.5;
+  --tracking-tight: -0.02em;
+
+  --font-w-regular: 400;
+  --font-w-medium: 500;
+  --font-w-bold: 700;
+
+  --text-d1: 44px;
+  --text-d2: 32px;
+  --text-d3: 28px;
+
+  --text-h1: 26px;
+  --text-h2: 24px;
+  --text-h3: 22px;
+  --text-h4: 20px;
+  --text-h5: 16px;
+
+  --text-b1: 18px;
+  --text-b2: 16px;
+  --text-b3: 14px;
+  --text-b4: 13px;
+  --text-b5: 12px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --text-d1: 60px;
+    --text-d2: 44px;
+    --text-d3: 36px;
+  }
+}
+
+/* =========================
+   BASE
+   ========================= */
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: rgb(var(--bg));
+    color: rgb(var(--fg));
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* =========================
+   v4 CUSTOM UTILITIES (@utility)
+   - 단일 클래스 유틸 정의는 @utility로
+   ========================= */
+
+/* text helpers */
+@utility muted {
+  color: rgb(var(--muted));
+}
+
+@utility accent {
+  color: rgb(var(--accent));
+}
+
+@utility typo {
+  line-height: var(--leading-default);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* typography presets */
+@utility text-d1 {
+  font-size: var(--text-d1);
+  font-weight: var(--font-w-bold);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-d2 {
+  font-size: var(--text-d2);
+  font-weight: var(--font-w-bold);
+  line-height: 1.15;
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-d3 {
+  font-size: var(--text-d3);
+  font-weight: var(--font-w-bold);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+}
+
+@utility text-h1 {
+  font-size: var(--text-h1);
+  font-weight: var(--font-w-bold);
+  line-height: 1.25;
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-h2 {
+  font-size: var(--text-h2);
+  font-weight: var(--font-w-bold);
+  line-height: 1.25;
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-h3 {
+  font-size: var(--text-h3);
+  font-weight: var(--font-w-bold);
+  line-height: 1.3;
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-h4 {
+  font-size: var(--text-h4);
+  font-weight: var(--font-w-medium);
+  line-height: 1.35;
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-h5 {
+  font-size: var(--text-h5);
+  font-weight: var(--font-w-medium);
+  line-height: 1.4;
+  letter-spacing: var(--tracking-tight);
+}
+
+@utility text-b1 {
+  font-size: var(--text-b1);
+  font-weight: var(--font-w-regular);
+  line-height: var(--leading-default);
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-b2 {
+  font-size: var(--text-b2);
+  font-weight: var(--font-w-regular);
+  line-height: var(--leading-default);
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-b3 {
+  font-size: var(--text-b3);
+  font-weight: var(--font-w-regular);
+  line-height: var(--leading-default);
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-b4 {
+  font-size: var(--text-b4);
+  font-weight: var(--font-w-regular);
+  line-height: var(--leading-default);
+  letter-spacing: var(--tracking-tight);
+}
+@utility text-b5 {
+  font-size: var(--text-b5);
+  font-weight: var(--font-w-medium);
+  line-height: var(--leading-default);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* layout / theme utilities */
+@utility bg-game {
+  background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(var(--accent), 0.22), transparent 55%),
+    radial-gradient(900px 520px at 90% 0%, rgba(var(--accent-2), 0.16), transparent 50%),
+    radial-gradient(800px 420px at 50% 110%, rgba(255, 255, 255, 0.04), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%),
+    rgb(var(--bg));
+}
+
+@utility shell {
+  max-width: 1100px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  padding-top: 24px; 
+}
+
+@media (min-width: 768px) {
+  .shell {
+    padding-top: 16px; /* md에서만 조금 */
+  }
+}
+
+
+/* card/panel */
+@utility panel {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(var(--panel), 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+@utility panel-glow {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transition-property: transform, opacity, filter, box-shadow, background-color, border-color;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* buttons */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--panel-2), 0.75);
+
+  position: relative;
+  transform: translateY(0);
+  will-change: transform;
+  transition-property: transform, opacity, filter, box-shadow, background-color, border-color;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* selected slot (kbd highlight) */
+@utility selected-slot {
+  box-shadow: 0 0 0 2px rgba(var(--accent), 0.55), 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================
+   COMPLEX / PSEUDO / KEYFRAMES
+   - @utility로 못하는 것(키프레임, ::before 등)은 @layer utilities에서 처리
+   ========================= */
+@layer utilities {
+    .panel {
+    isolation: isolate; /* ✅ 내부 z-index를 안전하게 분리 */
+  }
+
+  .panel::before {
+    z-index: 0;         /* ✅ 오버레이는 바닥 */
+  }
+
+  .panel > * {
+    position: relative; /* ✅ 실제 콘텐츠는 위 */
+    z-index: 1;
+  }
+  /* panel highlight */
+  .panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    pointer-events: none;
+    background:
+      radial-gradient(900px 120px at 20% 0%, rgba(255, 255, 255, 0.09), transparent 60%),
+      radial-gradient(700px 140px at 80% 0%, rgba(var(--accent), 0.08), transparent 55%);
+    opacity: 0.9;
+  }
+
+  /* btn states */
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.99);
+    filter: brightness(1.05);
+  }
+  .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--accent), 0.55), 0 0 0 6px rgba(var(--accent), 0.15);
+  }
+
+  /* panel-glow hover */
+  .panel-glow:hover {
+    transform: translateY(-2px);
+  }
+  .panel-glow:active {
+    transform: translateY(0px);
+  }
+
+  @keyframes sweep {
+    0% {
+      transform: translateX(-120%);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.18;
+    }
+    60% {
+      opacity: 0.22;
+    }
+    100% {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+  }
+
+  .sweep::before {
+    content: "";
+    position: absolute;
+    inset: -40% -20%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--accent), 0.18),
+      rgba(var(--accent-2), 0.12),
+      transparent
+    );
+    transform: translateX(-120%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sweep:hover::before {
+    animation: sweep 1.2s linear infinite;
+  }
+
+  @keyframes microPulse {
+    0% {
+      transform: translateY(-1px);
+    }
+    50% {
+      transform: translateY(-2px);
+    }
+    100% {
+      transform: translateY(-1px);
+    }
+  }
+  .selected-slot.pulse {
+    animation: microPulse 1.8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .panel-glow,
+    .sweep::before,
+    .selected-slot.pulse {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
