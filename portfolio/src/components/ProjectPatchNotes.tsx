@@ -30,7 +30,7 @@ export default async function ProjectPatchNotes({ project }: { project: string }
         {notes.map((n) => (
           <a
             key={n.slug}
-            href={n.links?.blog ?? '#'}
+            href={n.links?.velog ?? '#'}
             target="_blank"
             rel="noreferrer"
             className={[

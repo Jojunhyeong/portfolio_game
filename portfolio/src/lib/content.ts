@@ -47,7 +47,7 @@ export type PatchNoteFrontMatter = {
   links?: {
     project?: string
     repo?: string
-    blog?: string
+    velog?: string
     live?: string
   }
 }

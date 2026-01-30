@@ -40,15 +40,7 @@ export default async function ContentsPage() {
             </div>
           </div>
 
-          {/* LINKS */}
-          <div className="flex flex-col items-end gap-2">
-            <Link href="/" className="btn text-b5">
-              ← Launcher
-            </Link>
-            <Link href="/patch-notes" className="btn text-b5">
-              Patch Notes →
-            </Link>
-          </div>
+         
         </div>
       </header>
 
@@ -67,11 +59,11 @@ export default async function ContentsPage() {
             기본기를 다진 <span className="accent">도입기</span>
           </li>
           <li>
-            <span className="accent">Official Release</span> · 역할과 책임이 분명해지고
+            <span className="accent">Open Beta</span> · 역할과 책임이 분명해지고
             기능을 확장·정제한 단계
           </li>
           <li>
-            <span className="accent">End Game</span> · 운영과 개선까지 고려하며
+            <span className="accent">Official Release</span> · 운영과 개선까지 고려하며
             서비스 완성도를 끌어올린 단계
           </li>
         </ul>

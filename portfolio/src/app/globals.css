@@ -2,25 +2,24 @@
 @import "tailwindcss";
 
 /* =========================
-   CSS VARIABLES (확정)
+   CSS VARIABLES
    ========================= */
 :root {
   --font-sans: "Pretendard", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 
-  /* rgb triplets */
-  --bg: 7 10 18; /* deep navy */
-  --fg: 233 240 255;
+  --bg: 6 8 14;
+  --fg: 236 243 255;
+  --muted: 180 192 210;
 
-  --panel: 18 24 38; /* panel base */
-  --panel-2: 12 18 30; /* deeper */
-  --muted: 148 163 184;
+  --panel: 14 16 28;
+  --panel-2: 10 12 22;
 
-  --accent: 168 85 247; /* purple */
-  --accent-2: 34 211 238; /* cyan */
+  --accent: 255 78 205;
+  --accent-2: 0 229 255;
+  --ok: 64 255 151;
 
-  /* typography */
-  --leading-default: 1.5;
+  --leading-default: 1.58;
   --tracking-tight: -0.02em;
 
   --font-w-regular: 400;
@@ -42,6 +41,8 @@
   --text-b3: 14px;
   --text-b4: 13px;
   --text-b5: 12px;
+
+  --r: 18px;
 }
 
 @media (min-width: 1024px) {
@@ -69,151 +70,117 @@
     font-family: var(--font-sans);
     background: rgb(var(--bg));
     color: rgb(var(--fg));
+    /* ✅ fixed 깨는 원인 줄이기: relative 제거 */
   }
 
   a {
     color: inherit;
     text-decoration: none;
   }
+
+  /* 전체 HUD 질감 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      rgba(0, 0, 0, 0) 6px
+    );
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(1200px 700px at 50% 20%, rgba(var(--accent-2), 0.05), transparent 60%),
+      radial-gradient(900px 600px at 20% 0%, rgba(var(--accent), 0.05), transparent 62%),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.012) 0px,
+        rgba(255, 255, 255, 0.012) 1px,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0) 6px
+      );
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+  }
 }
 
 /* =========================
-   v4 CUSTOM UTILITIES (@utility)
-   - 단일 클래스 유틸 정의는 @utility로
+   TEXT / TYPO
    ========================= */
-
-/* text helpers */
-@utility muted {
-  color: rgb(var(--muted));
-}
-
-@utility accent {
-  color: rgb(var(--accent));
-}
-
-@utility typo {
-  line-height: var(--leading-default);
-  letter-spacing: var(--tracking-tight);
-}
+@utility muted { color: rgb(var(--muted)); }
+@utility accent { color: rgb(var(--accent)); }
+@utility typo { line-height: var(--leading-default); letter-spacing: var(--tracking-tight); }
 
 /* typography presets */
-@utility text-d1 {
-  font-size: var(--text-d1);
-  font-weight: var(--font-w-bold);
-  line-height: 1.1;
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-d2 {
-  font-size: var(--text-d2);
-  font-weight: var(--font-w-bold);
-  line-height: 1.15;
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-d3 {
-  font-size: var(--text-d3);
-  font-weight: var(--font-w-bold);
-  line-height: 1.2;
-  letter-spacing: var(--tracking-tight);
-}
+@utility text-d1 { font-size: var(--text-d1); font-weight: var(--font-w-bold); line-height: 1.08; letter-spacing: var(--tracking-tight); }
+@utility text-d2 { font-size: var(--text-d2); font-weight: var(--font-w-bold); line-height: 1.12; letter-spacing: var(--tracking-tight); }
+@utility text-d3 { font-size: var(--text-d3); font-weight: var(--font-w-bold); line-height: 1.16; letter-spacing: var(--tracking-tight); }
 
-@utility text-h1 {
-  font-size: var(--text-h1);
-  font-weight: var(--font-w-bold);
-  line-height: 1.25;
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-h2 {
-  font-size: var(--text-h2);
-  font-weight: var(--font-w-bold);
-  line-height: 1.25;
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-h3 {
-  font-size: var(--text-h3);
-  font-weight: var(--font-w-bold);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-h4 {
-  font-size: var(--text-h4);
-  font-weight: var(--font-w-medium);
-  line-height: 1.35;
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-h5 {
-  font-size: var(--text-h5);
-  font-weight: var(--font-w-medium);
-  line-height: 1.4;
-  letter-spacing: var(--tracking-tight);
-}
+@utility text-h1 { font-size: var(--text-h1); font-weight: var(--font-w-bold); line-height: 1.22; letter-spacing: var(--tracking-tight); }
+@utility text-h2 { font-size: var(--text-h2); font-weight: var(--font-w-bold); line-height: 1.24; letter-spacing: var(--tracking-tight); }
+@utility text-h3 { font-size: var(--text-h3); font-weight: var(--font-w-bold); line-height: 1.28; letter-spacing: var(--tracking-tight); }
+@utility text-h4 { font-size: var(--text-h4); font-weight: var(--font-w-medium); line-height: 1.32; letter-spacing: var(--tracking-tight); }
+@utility text-h5 { font-size: var(--text-h5); font-weight: var(--font-w-medium); line-height: 1.38; letter-spacing: var(--tracking-tight); }
 
-@utility text-b1 {
-  font-size: var(--text-b1);
-  font-weight: var(--font-w-regular);
-  line-height: var(--leading-default);
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-b2 {
-  font-size: var(--text-b2);
-  font-weight: var(--font-w-regular);
-  line-height: var(--leading-default);
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-b3 {
-  font-size: var(--text-b3);
-  font-weight: var(--font-w-regular);
-  line-height: var(--leading-default);
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-b4 {
-  font-size: var(--text-b4);
-  font-weight: var(--font-w-regular);
-  line-height: var(--leading-default);
-  letter-spacing: var(--tracking-tight);
-}
-@utility text-b5 {
-  font-size: var(--text-b5);
-  font-weight: var(--font-w-medium);
-  line-height: var(--leading-default);
-  letter-spacing: var(--tracking-tight);
-}
+@utility text-b1 { font-size: var(--text-b1); font-weight: var(--font-w-regular); line-height: 1.6; letter-spacing: var(--tracking-tight); }
+@utility text-b2 { font-size: var(--text-b2); font-weight: var(--font-w-regular); line-height: 1.62; letter-spacing: var(--tracking-tight); }
+@utility text-b3 { font-size: var(--text-b3); font-weight: var(--font-w-regular); line-height: 1.68; letter-spacing: var(--tracking-tight); }
+@utility text-b4 { font-size: var(--text-b4); font-weight: var(--font-w-regular); line-height: 1.72; letter-spacing: var(--tracking-tight); }
+@utility text-b5 { font-size: var(--text-b5); font-weight: var(--font-w-medium); line-height: 1.76; letter-spacing: var(--tracking-tight); }
 
-/* layout / theme utilities */
-@utility bg-game {
-  background:
-    radial-gradient(1200px 700px at 15% -10%, rgba(var(--accent), 0.22), transparent 55%),
-    radial-gradient(900px 520px at 90% 0%, rgba(var(--accent-2), 0.16), transparent 50%),
-    radial-gradient(800px 420px at 50% 110%, rgba(255, 255, 255, 0.04), transparent 55%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%),
-    rgb(var(--bg));
-}
-
+/* =========================
+   LAYOUT / THEME
+   ========================= */
 @utility shell {
   max-width: 1100px;
   margin-inline: auto;
   padding-inline: 16px;
-  padding-top: 24px; 
+  padding-top: 24px;
 }
-
 @media (min-width: 768px) {
-  .shell {
-    padding-top: 16px; /* md에서만 조금 */
-  }
+  .shell { padding-top: 16px; }
 }
 
+/* bg-game은 layout.tsx body에 붙여서 켜기 */
+@utility bg-game {
+  background:
+    radial-gradient(1200px 900px at 50% 40%, rgba(0,0,0,0.0), rgba(0,0,0,0.55) 72%, rgba(0,0,0,0.8) 100%),
+    radial-gradient(900px 520px at 12% -8%, rgba(var(--accent), 0.22), transparent 60%),
+    radial-gradient(820px 480px at 92% 0%, rgba(var(--accent-2), 0.16), transparent 58%),
+    radial-gradient(900px 520px at 50% 120%, rgba(255, 255, 255, 0.035), transparent 60%),
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+    rgb(var(--bg));
+  background-size: auto, auto, auto, auto, 48px 48px, 48px 48px, auto;
+  background-position: center, center, center, center, center, center, center;
+}
 
-/* card/panel */
+/* =========================
+   PANEL / BUTTON (base)
+   ========================= */
 @utility panel {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
-    rgba(var(--panel), 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
+    linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.02)),
+    rgba(var(--panel), 0.92);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r);
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+    0 22px 65px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
 }
 
 @utility panel-glow {
@@ -225,7 +192,6 @@
   transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* buttons */
 @utility btn {
   display: inline-flex;
   align-items: center;
@@ -233,131 +199,279 @@
   gap: 8px;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(var(--panel-2), 0.75);
-
+  border: 1px solid rgba(255,255,255,0.14);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+    rgba(var(--panel-2), 0.9);
+  box-shadow:
+    0 14px 40px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.07);
   position: relative;
   transform: translateY(0);
   will-change: transform;
-  transition-property: transform, opacity, filter, box-shadow, background-color, border-color;
+  transition-property: transform, filter, box-shadow, background-color, border-color;
   transition-duration: 160ms;
   transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* selected slot (kbd highlight) */
-@utility selected-slot {
-  box-shadow: 0 0 0 2px rgba(var(--accent), 0.55), 0 16px 40px rgba(0, 0, 0, 0.35);
+/* =========================
+   HUD / DOCK (base as @utility)
+   ========================= */
+@utility hud-top { height: 84px; }
+
+@utility hud-bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: calc(var(--r) + 2px);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+    rgba(var(--panel), 0.75);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow:
+    0 18px 60px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  isolation: isolate;
+}
+
+@utility hud-bar-top {
+  border-color: rgba(255,255,255,0.16);
+  box-shadow:
+    0 26px 90px rgba(0,0,0,0.72),
+    0 0 0 1px rgba(var(--accent-2), 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+
+@utility hud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+    rgba(var(--panel-2), 0.85);
+  box-shadow:
+    0 14px 40px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 160ms, box-shadow 160ms, border-color 160ms;
+  font-size: var(--text-b5);
+  letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
+}
+
+@utility hud-btn-primary {
+  border-color: rgba(var(--accent-2), 0.30);
+  box-shadow:
+    0 18px 60px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 0 1px rgba(var(--accent), 0.10);
+}
+
+@utility hud-path {
+  font-size: var(--text-b5);
+  color: rgb(var(--muted));
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+@utility hud-chip {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.20);
+  font-size: var(--text-b5);
+  white-space: nowrap;
+}
+
+@utility hud-chip-online {
+  border-color: rgba(var(--ok), 0.30);
+  box-shadow:
+    0 0 0 1px rgba(var(--ok), 0.10),
+    0 0 26px rgba(var(--ok), 0.08);
+}
+
+@utility hud-dot-green {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(var(--ok), 0.95);
+  box-shadow:
+    0 0 10px rgba(var(--ok), 0.55),
+    0 0 26px rgba(var(--ok), 0.25);
+  position: relative;
+}
+
+@utility dock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 999px;
+  background:
+    radial-gradient(420px 120px at 50% 0%, rgba(var(--accent-2), 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+    rgba(var(--panel), 0.72);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+  backdrop-filter: blur(12px);
+}
+
+@utility dock-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-size: var(--text-b5);
+  color: rgb(var(--muted));
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.16);
+  transition: transform 160ms, filter 160ms, box-shadow 160ms, border-color 160ms;
+  white-space: nowrap;
+}
+
+@utility dock-item-active {
+  color: rgb(var(--fg));
+  border-color: rgba(var(--accent-2), 0.35);
+  box-shadow:
+    0 0 0 1px rgba(var(--accent), 0.12),
+    0 0 22px rgba(var(--accent-2), 0.14);
+}
+
+@utility dock-ic {
+  width: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--accent-2));
+  opacity: 0.9;
+}
+
+@utility dock-tx { transform: translateY(-0.5px); }
+
+@utility dock-spacer {
+  width: 1px;
+  height: 24px;
+  background: rgba(255,255,255,0.12);
+  margin-inline: 6px;
 }
 
 /* =========================
-   COMPLEX / PSEUDO / KEYFRAMES
-   - @utility로 못하는 것(키프레임, ::before 등)은 @layer utilities에서 처리
+   INTERACTIONS / PSEUDO / KEYFRAMES
+   (cannot be @utility cleanly)
    ========================= */
 @layer utilities {
-    .panel {
-    isolation: isolate; /* ✅ 내부 z-index를 안전하게 분리 */
-  }
-
-  .panel::before {
-    z-index: 0;         /* ✅ 오버레이는 바닥 */
-  }
-
-  .panel > * {
-    position: relative; /* ✅ 실제 콘텐츠는 위 */
-    z-index: 1;
-  }
-  /* panel highlight */
-  .panel::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 18px;
-    pointer-events: none;
-    background:
-      radial-gradient(900px 120px at 20% 0%, rgba(255, 255, 255, 0.09), transparent 60%),
-      radial-gradient(700px 140px at 80% 0%, rgba(var(--accent), 0.08), transparent 55%);
-    opacity: 0.9;
-  }
-
   /* btn states */
   .btn:hover {
     transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow:
+      0 18px 55px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 0 0 1px rgba(var(--accent-2), 0.18);
   }
   .btn:active {
     transform: translateY(1px) scale(0.99);
-    filter: brightness(1.05);
+    filter: brightness(1.08);
   }
   .btn:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(var(--accent), 0.55), 0 0 0 6px rgba(var(--accent), 0.15);
+    box-shadow:
+      0 0 0 2px rgba(var(--accent-2), 0.55),
+      0 0 0 6px rgba(var(--accent), 0.14);
   }
 
-  /* panel-glow hover */
-  .panel-glow:hover {
-    transform: translateY(-2px);
+  /* hud-btn states */
+  .hud-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    box-shadow:
+      0 18px 55px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 0 0 1px rgba(var(--accent-2), 0.22);
   }
-  .panel-glow:active {
-    transform: translateY(0px);
+  .hud-btn:active { transform: translateY(1px) scale(0.99); }
+
+  /* dock hover */
+  .dock-item:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    box-shadow: 0 0 0 1px rgba(var(--accent-2), 0.18);
   }
 
-  @keyframes sweep {
-    0% {
-      transform: translateX(-120%);
-      opacity: 0;
-    }
-    20% {
-      opacity: 0.18;
-    }
-    60% {
-      opacity: 0.22;
-    }
-    100% {
-      transform: translateX(120%);
-      opacity: 0;
-    }
-  }
-
-  .sweep::before {
+  /* corner brackets */
+  .hud-bar::after {
     content: "";
     position: absolute;
-    inset: -40% -20%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(var(--accent), 0.18),
-      rgba(var(--accent-2), 0.12),
-      transparent
-    );
-    transform: translateX(-120%);
-    opacity: 0;
+    inset: 0;
+    border-radius: calc(var(--r) + 2px);
     pointer-events: none;
-  }
-  .sweep:hover::before {
-    animation: sweep 1.2s linear infinite;
-  }
-
-  @keyframes microPulse {
-    0% {
-      transform: translateY(-1px);
-    }
-    50% {
-      transform: translateY(-2px);
-    }
-    100% {
-      transform: translateY(-1px);
-    }
-  }
-  .selected-slot.pulse {
-    animation: microPulse 1.8s ease-in-out infinite;
+    background:
+      linear-gradient(rgba(var(--accent-2),0.55), rgba(var(--accent-2),0.55)) left 12px top 12px / 18px 2px no-repeat,
+      linear-gradient(rgba(var(--accent-2),0.55), rgba(var(--accent-2),0.55)) left 12px top 12px / 2px 18px no-repeat,
+      linear-gradient(rgba(var(--accent),0.55), rgba(var(--accent),0.55)) right 12px top 12px / 18px 2px no-repeat,
+      linear-gradient(rgba(var(--accent),0.55), rgba(var(--accent),0.55)) right 12px top 12px / 2px 18px no-repeat;
+    opacity: 0.55;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .btn,
-    .panel-glow,
-    .sweep::before,
-    .selected-slot.pulse {
-      transition: none !important;
-      animation: none !important;
-    }
+  /* scanline overlay */
+  .hud-bar-top::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius: calc(var(--r) + 2px);
+    pointer-events:none;
+    z-index: 1;
+    background:
+      radial-gradient(900px 120px at 50% 0%, rgba(var(--accent-2), 0.14), transparent 60%),
+      radial-gradient(700px 140px at 18% 20%, rgba(var(--accent), 0.12), transparent 60%),
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.035) 0px,
+        rgba(255,255,255,0.035) 1px,
+        rgba(0,0,0,0) 7px
+      );
+    opacity: 0.65;
+    mix-blend-mode: overlay;
+  }
+  .hud-bar-top > * { position: relative; z-index: 2; }
+
+  /* green dot pulse */
+  .hud-dot-green::after{
+    content:"";
+    position:absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--ok), 0.25);
+    box-shadow: 0 0 18px rgba(var(--ok), 0.20);
+    animation: hudPulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes hudPulse{
+    0%   { transform: scale(0.78); opacity: 0.15; }
+    50%  { transform: scale(1.08); opacity: 0.40; }
+    100% { transform: scale(0.78); opacity: 0.15; }
+  }
+
+  /* responsive dock */
+  @media (max-width: 640px) {
+    .dock-tx { display: none; }
+    .dock-item { padding: 10px 12px; }
+  }
+
+  /* reduce motion */
+  @media (prefers-reduced-motion: reduce){
+    .hud-dot-green::after{ animation: none !important; }
   }
 }
+

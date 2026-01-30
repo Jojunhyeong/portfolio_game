@@ -59,7 +59,7 @@ export default async function PatchNotesPage() {
             {curated.map((n) => (
               <a
                 key={n.slug}
-                href={n.links?.blog ?? '#'}
+                href={n.links?.velog ?? '#'}
                 target="_blank"
                 rel="noreferrer"
                 className={['block', 'panel panel-glow sweep', 'p-6 md:p-7', 'hover:-translate-y-1', 'transition-transform duration-150'].join(

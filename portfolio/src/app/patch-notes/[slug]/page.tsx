@@ -75,8 +75,8 @@ export default async function PatchNoteDetailPage({
                   ⎘ Repo
                 </a>
               ) : null}
-              {n.links?.blog ? (
-                <a className="btn text-b5" href={n.links.blog} target="_blank" rel="noreferrer">
+              {n.links?.velog ? (
+                <a className="btn text-b5" href={n.links.velog} target="_blank" rel="noreferrer">
                   ✎ Blog
                 </a>
               ) : null}
