@@ -1,18 +1,22 @@
 // src/components/StartMenu.tsx
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 
 import avatar from '@/../public/avatar.jpg'
-import { clearLastSeen, readLastSeen, LAST_SEEN_KEY, type LastSeen } from '@/lib/lastSeen'
+import { readLastSeen } from '@/lib/lastSeen'
+
+import FeaturedProjects from '@/components/FeaturedProjects'
+import RecentPatchNotes from '@/components/RecentPatchNotes'
+import MountSection from '@/components/MountSection'
 
 function Chip({ children }: { children: React.ReactNode }) {
-  return <span className="panel panel-glow px-2 py-1 text-b5 muted">{children}</span>
+  return <span className="panel px-2 py-1 text-b5 muted">{children}</span>
 }
 function AccentChip({ children }: { children: React.ReactNode }) {
-  return <span className="panel panel-glow px-2 py-1 text-b5 accent">{children}</span>
+  return <span className="panel px-2 py-1 text-b5 accent">{children}</span>
 }
 
 function MiniCard({
@@ -28,7 +32,35 @@ function MiniCard({
     <div className="panel panel-glow p-5 md:p-6">
       <div className="text-b5 muted">{label}</div>
       <div className="text-b2 mt-2">{title}</div>
-      <div className="text-b4 muted mt-2 typo">{desc}</div>
+      <div className="text-b4 muted mt-2 leading-relaxed">{desc}</div>
+    </div>
+  )
+}
+
+function SectionHeader({
+  label,
+  title,
+  desc,
+}: {
+  label: string
+  title: string
+  desc: string
+}) {
+  return (
+    <div className="mb-4">
+      <div className="text-b5 muted">{label}</div>
+      <div className="text-b2 mt-2">{title}</div>
+      <div className="text-b4 muted mt-2 leading-relaxed">{desc}</div>
+    </div>
+  )
+}
+
+function Shortcut() {
+  return (
+    <div className="text-b5 muted mt-4">
+      Shortcut:{' '}
+      <span className="accent">C</span> Projects · <span className="accent">P</span> Patch Notes ·{' '}
+      <span className="accent">H</span> Home 
     </div>
   )
 }
@@ -37,33 +69,47 @@ export default function StartMenu() {
   const router = useRouter()
   const pathname = usePathname()
 
-  const [last, setLast] = useState<LastSeen | null>(null)
-
+  // lastSeen 기능은 유지하지만 UI 노출은 제거
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    setLast(readLastSeen())
-  }, [pathname])
-
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key !== LAST_SEEN_KEY) return
-      setLast(readLastSeen())
-    }
-    window.addEventListener('storage', onStorage)
-    return () => window.removeEventListener('storage', onStorage)
+    readLastSeen()
   }, [])
 
-  
 
-  const goProjects = () => router.push('/contents')
-  const goPatch = () => router.push('/patch-notes')
 
-  const onReset = () => {
-    clearLastSeen()
-    setLast(null)
-  }
+  const featured = useMemo(
+    () => [
+      {
+        slug: 'chop',
+        title: 'CHOP!',
+        subtitle: 'PWA 기반 온라인 게임 아이템·계정 현금거래 중개 서비스',
+        summary:
+          '현업 개발자들과 협업하며 작업 기준, 의사소통 방식, 코드 리뷰 흐름을 익히며 프론트엔드 개발자로서의 기반을 만들었습니다.',
+        tags: ['React', 'TypeScript', 'Styled Components'],
+        icon: '/chop_logo.png'
+      },
+      {
+        slug: 'on-fit',
+        title: 'on-fit',
+        subtitle: '거리 기반 좌표를 이용한 우리동네 운동 소모임 매칭 서비스',
+        summary:
+          '기획부터 Next.js 기반 화면 설계, Supabase 백엔드 구성, CI/CD·배포까지 서비스 전 과정을 처음으로 직접 경험한 프로젝트였습니다.',
+        tags: ['Next.js', 'Tailwind', 'Supabase'],
+        icon: '/onfit_logo.png'
+      },
+      {
+        slug: 'ttak',
+        title: 'TTAK',
+        subtitle: '공공데이터 기반 건강기능식품 탐색·상세 가이드 제공 서비스',
+        summary:
+          '공공데이터 기반 탐색/상세 경험을 구현하며 PM·디자이너·백엔드와 함께 사용자 흐름을 설계했고, 프론트엔드 파트를 리딩하며 화면 구조와 기준을 잡았습니다.',
+        tags: ['Next.js', 'Google Oauth', 'Event Log'],
+        icon: '/ttak_logo.svg'
+      },
+    ],
+    [],
+  )
 
-  const STACK = useMemo(
+  const stackBadges = useMemo(
     () => [
       'React',
       'TypeScript',
@@ -82,141 +128,147 @@ export default function StartMenu() {
     [],
   )
 
-  const ACCENT_STACK = useMemo(() => new Set(['Next.js', 'React', 'TypeScript', 'Tailwind CSS']), [])
-
   return (
-    <section className="panel panel-glow p-6 md:p-10 overflow-hidden">
-      {/* TOP */}
-      <div className="mount-reveal d-0">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="min-w-0">
-            <div className="text-b5 muted">PORTFOLIO</div>
-            <h1 className="text-d2 mt-2">
-              조준형 <span className="text-b2 muted ml-2">Frontend Developer</span>
-            </h1>
+    <div className="w-full">
+      {/* ✅ 바깥 “유리판넬” 프레임 */}
+      <div className="panel panel-glow p-6 md:p-8">
+        {/* 내부는 섹션 간격으로만 분리 */}
+        <div className="space-y-10">
+          {/* ========== HERO ========== */}
+          <MountSection delay={0}>
+            <section className="flex flex-col lg:flex-row lg:items-start gap-6">
+              <div className="flex-1 min-w-0">
+                <div className="text-b5 muted">PORTFOLIO</div>
 
-            <p className="text-b3 muted mt-4 typo max-w-[68ch]">
-              성장 과정은 하나의 서비스가 <span className="accent">출시</span>되고{' '}
-              <span className="accent">개선</span>되며 안정화되는 흐름과 닮아 있다고 생각합니다.
-              <br />
-              협업 과정에서는 팀과 <span className="accent">문제를 함께 정의</span>하고, 새로운 시도를{' '}
-              <span className="accent">코드로 검증</span>하는 과정을 중요하게 여기고 있습니다.
-              <br />
-              이러한 경험과 고민을 <span className="accent">기록</span>으로 남기며 스스로의 변화를 정리해 왔습니다.
-            </p>
+                <div className="flex items-baseline gap-3 mt-2">
+                  <h1 className="text-h2">조준형</h1>
+                  <div className="text-b3 muted">Frontend Developer</div>
+                </div>
 
-            <div className="mt-4 text-b5 muted">
-              Shortcut: <span className="accent">C</span> Projects · <span className="accent">P</span> Patch Notes ·{' '}
-              <span className="accent">H</span> Home · <span className="accent">ESC</span> Back
-            </div>
-          </div>
+                <p className="text-b3 muted mt-4 typo max-w-[68ch]">
+                  성장 과정은 하나의 서비스가 <span className="accent">출시</span>되고{' '}
+                  <span className="accent">개선</span>되며 안정화되는 흐름과 닮아 있다고 생각합니다.
+                  <br />
+                  협업 과정에서는 팀과 <span className="accent">문제를 함께 정의</span>하고, 새로운 시도를{' '}
+                  <span className="accent">코드로 검증</span>하는 과정을 중요하게 여기고 있습니다.
+                  <br />
+                  이러한 경험과 고민을 <span className="accent">기록</span>으로 남기며 스스로의 변화를 정리해
+                  왔습니다.
+                </p>
 
-          {/* avatar */}
-          <div className="flex items-start gap-4 md:justify-end">
-            <div className="relative h-40 w-40 shrink-0">
-              <div
-                className="absolute inset-0 rounded-full opacity-90"
-                style={{
-                  background: 'linear-gradient(180deg, rgba(var(--accent), .85), rgba(var(--accent-2), .65))',
-                }}
+                <Shortcut />
+
+                {/* ✅ STACK: Hero 바로 아래 얇게 */}
+                <div className="mt-5">
+                  <div className="text-b5 muted mb-2">STACK</div>
+                  <div className="flex flex-wrap gap-2">
+                    {stackBadges.map((s, i) =>
+                      i === 0 ? <AccentChip key={s}>{s}</AccentChip> : <Chip key={s}>{s}</Chip>,
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="shrink-0">
+                <div className="panel panel-glow p-3 w-[200px]">
+                  <Image
+                    src={avatar}
+                    alt="avatar"
+                    className="rounded-2xl w-full h-auto object-cover"
+                    priority
+                  />
+                </div>
+              </div>
+            </section>
+          </MountSection>
+
+          {/* ========== FEATURED PROJECTS ========== */}
+          <MountSection delay={1}>
+            <FeaturedProjects items={featured} />
+          </MountSection>
+
+          {/* ✅ 섹션 분리: WORK STYLE */}
+          <MountSection delay={2}>
+            <section>
+              <SectionHeader
+                label="WORK STYLE"
+                title="프로젝트를 진행하며 반복적으로 사용한 방식"
+                desc="문제를 정의하고 기준을 맞춘 뒤, 실행과 기록으로 연결하는 흐름을 정리했습니다."
               />
-              <div className="absolute inset-[2px] rounded-full bg-[rgba(var(--panel),0.85)]" />
 
-              <Image
-                src={avatar}
-                alt="조준형 프로필"
-                width={200}
-                height={200}
-                priority
-                className="
-                  relative z-10 h-full w-full
-                  rounded-xl object-cover
-                  saturate-125 contrast-110
-                  ring-[3px] ring-[rgba(var(--accent),1)]
-                  shadow-[0_0_8px_rgba(var(--accent),1)]
-                  drop-shadow-[0_0_16px_rgba(var(--accent),0.95)]
-                  drop-shadow-[0_0_32px_rgba(var(--accent),0.75)]
-                  drop-shadow-[0_0_56px_rgba(var(--accent-2),0.45)]
-                  drop-shadow-[0_0_88px_rgba(var(--accent-2),0.25)]
-                  select-none pointer-events-none
-                "
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <MiniCard
+                  label="RUN"
+                  title="CHOP! → minds-safe → on-fit → TTAK"
+                  desc="구현 중심에서 시작해, 구조·운영·협업까지 확장해 왔습니다."
+                />
+                <MiniCard
+                  label="FOCUS"
+                  title="문제 정의 · 기준 합의 · 실행"
+                  desc="문제를 정리해 팀이 같은 기준으로 움직이도록 만들고, 실행까지 연결해 왔습니다."
+                />
+                <MiniCard
+                  label="SIGNATURE"
+                  title="소통 · 실행 · 기록"
+                  desc="대화를 통해 문제를 풀고, 새로운 시도를 코드로 검증하며 기록합니다."
+                />
+              </div>
+            </section>
+          </MountSection>
+
+          {/* ========== RECENT PATCH NOTES ========== */}
+          <MountSection delay={3}>
+            <RecentPatchNotes
+              items={[
+                {
+                  slug: 'home-ia-refactor',
+                  title: 'Typography System Update',
+                  date: '2025-12',
+                  subtitle:
+                    'Tailwind v4 기반 타이포그래피 토큰/유틸 구조를 설계하고 사용 규칙을 문서화했습니다.',
+                },
+                {
+                  slug: 'project-embed-patchnotes',
+                  title: 'OAUTH Login Hotfix',
+                  date: '2026-01',
+                  subtitle: '도메인/쿠키/CORS 이슈를 추적하며 OAUTH 로그인 흐름을 안정화했습니다.',
+                },
+              ]}
+            />
+          </MountSection>
+
+          {/* ========== HOW TO READ + CAREER ========== */}
+          <MountSection delay={4}>
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="panel panel-glow p-5 md:p-6">
+                <div className="text-b5 muted">HOW TO READ</div>
+                <div className="mt-3 space-y-2 text-b4">
+                  <div>
+                    <span className="accent">Projects</span>: 대표 프로젝트 / 역할 / 성과 중심
+                  </div>
+                  <div>
+                    <span className="accent">Patch Notes</span>: 문제 해결/개선 기록을 시간순으로 정리
+                  </div>
+                </div>
+              </div>
+
+              <div className="panel panel-glow p-5 md:p-6">
+                <div className="text-b5 muted">CAREER</div>
+                <div className="mt-3 space-y-2 text-b4 muted leading-relaxed">
+                  <div>· 부경대학교 컴퓨터공학과 졸업</div>
+                  <div>· 권오흠 교수님 알고리즘 연구실 학부 연구생</div>
+                  <div>· 구름 deepdive 부트캠프 수료</div>
+                </div>
+              </div>
+            </section>
+          </MountSection>
+
+          {/* Footer (프레임 안에 넣으면 통일감 더 좋음) */}
+          <MountSection delay={4}>
+            <div className="text-b5 muted">© {new Date().getFullYear()} · Portfolio</div>
+          </MountSection>
         </div>
       </div>
-
-      {/* STACK PREVIEW */}
-      <div className="mount-reveal d-1">
-        <div className="mt-6 panel panel-glow p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-b5 muted">STACK PREVIEW</div>
-              <div className="text-b3 mt-2 muted typo">프로젝트 전반에서 반복적으로 사용한 기술/협업 도구입니다.</div>
-            </div>
-            <div className="text-b5 muted">{STACK.length} badges</div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {STACK.map((name) =>
-              ACCENT_STACK.has(name) ? <AccentChip key={name}>{name}</AccentChip> : <Chip key={name}>{name}</Chip>,
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* RUN / FOCUS / SIGNATURE */}
-      <div className="mount-reveal d-2">
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <MiniCard label="RUN" title="CHOP! → minds-safe → on-fit → TTAK" desc="구현 중심에서 시작해, 구조·운영·협업까지 확장해 왔습니다." />
-          <MiniCard label="FOCUS" title="문제 정의 · 기준 합의 · 실행" desc="문제를 정리해 팀이 같은 기준으로 움직이도록 만들고, 실행까지 연결해 왔습니다." />
-          <MiniCard label="SIGNATURE" title="소통 · 실행 · 기록" desc="대화를 통해 문제를 풀고, 새로운 시도를 코드로 검증하며 기록합니다." />
-        </div>
-      </div>
-
-      {/* MAIN CTA */}
-      <div className="mount-reveal d-3">
-        <div className="mt-8 grid gap-3 md:grid-cols-2">
-          <button type="button" onClick={goProjects} className="btn text-b3 justify-center">
-            ▶ Contents
-          </button>
-          <button type="button" onClick={goPatch} className="btn text-b3 justify-center">
-            ✦ Patch Notes
-          </button>
-        </div>
-      </div>
-
-      {/* GUIDE + CAREER */}
-      <div className="mount-reveal d-4">
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="panel panel-glow p-6">
-            <div className="text-b5 muted">HOW TO READ</div>
-            <ul className="mt-3 space-y-2 text-b3 muted">
-              <li>
-                <span className="accent">Projects</span>: 대표 프로젝트 / 역할 / 성과를 결과물 중심으로 정리했습니다.
-              </li>
-              <li>
-                <span className="accent">Patch Notes</span>: 개선/문제 해결 과정을 시간순으로 정리했습니다.
-              </li>
-              <li>
-                추천 동선: <span className="accent">Projects → TTAK → Patch Notes</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="panel panel-glow p-6">
-            <div className="text-b5 muted">CAREER</div>
-            <ul className="mt-3 space-y-2 text-b3 muted typo">
-              <li>• 부경대학교 컴퓨터공학과 졸업</li>
-              <li>• 권오흠 교수님 알고리즘 연구실 학부 연구생</li>
-              <li>• 구름 Deep Dive 프론트엔드 부트캠프 수료</li>
-            </ul>
-
-            {/* 필요하면 남겨두기 */}
-            {/* <button type="button" onClick={onReset} className="btn text-b5 mt-4">Reset →</button> */}
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   )
 }

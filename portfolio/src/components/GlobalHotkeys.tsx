@@ -15,11 +15,6 @@ export default function GlobalHotkeys() {
 
       const key = e.key.toLowerCase()
 
-      if (key === 'escape') {
-        e.preventDefault()
-        router.back()
-        return
-      }
       if (key === 'c') {
         e.preventDefault()
         router.push('/contents')
