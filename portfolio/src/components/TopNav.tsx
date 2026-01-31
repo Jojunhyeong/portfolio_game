@@ -53,7 +53,7 @@ export default function TopNav() {
             <a className="hud-btn" href="https://velog.io/@jojh0323/posts" target="_blank" rel="noreferrer">
               Velog ↗
             </a>
-            <a className="hud-btn" href="mailto:your@email.com">
+            <a className="hud-btn" href="mailto:jojh0323@pukyong.ac.kr">
               Contact ✉
             </a>
           </div>
