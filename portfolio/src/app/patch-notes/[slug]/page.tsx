@@ -6,6 +6,7 @@ import { getPatchNoteBySlug, getPatchNoteSlugs } from '@/lib/content'
 import { Mdx } from '@/components/Mdx'
 import { RememberLastSeen } from '@/components/RememberLastSeen'
 import PatchNoteHud from '@/components/PatchNoteHud'
+import MountSection from '@/components/MountSection'
 
 export async function generateStaticParams() {
   const slugs = await getPatchNoteSlugs()
@@ -26,98 +27,109 @@ export default async function PatchNoteDetailPage({
 
   const tags = (n.tags ?? []).slice(0, 10)
   const summary =
-    (n.summary ?? '').trim() ||
-    '이 패치에서 해결한 문제와 적용한 수정, 그리고 결과를 기록했다.'
+    (n.summary ?? '').trim() || '이 패치에서 해결한 문제와 적용한 수정, 그리고 결과를 기록했다.'
 
   const bullets = buildBulletSummary(n)
 
   return (
     <>
       <RememberLastSeen type="patch" slug={slug} />
-      <PatchNoteHud note={n} />
+
+      {/* 상단 HUD */}
+      <MountSection delay={0}>
+        <PatchNoteHud note={n} />
+      </MountSection>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[360px_1fr]">
         {/* LEFT PANEL */}
         <aside className="space-y-6">
           {/* Quick Summary */}
-          <section className="panel p-6">
-            <div className="text-b5 muted">QUICK SUMMARY</div>
+          <MountSection delay={1}>
+            <section className="panel panel-glow p-6">
+              <div className="text-b5 muted">QUICK SUMMARY</div>
 
-            <div className="mt-3 text-b3 typo">{summary}</div>
+              <div className="mt-3 text-b3 typo">{summary}</div>
 
-            <ul className="mt-4 space-y-2 text-b4 muted">
-              {bullets.map((b) => (
-                <li key={b} className="flex gap-2">
-                  <span className="accent">•</span>
-                  <span className="min-w-0">{b}</span>
-                </li>
-              ))}
-            </ul>
-
-            {tags.length ? (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {tags.map((t: string) => (
-                  <span key={t} className="panel px-2 py-1 text-b5 muted">
-                    #{t}
-                  </span>
+              <ul className="mt-4 space-y-2 text-b4 muted">
+                {bullets.map((b) => (
+                  <li key={b} className="flex gap-2">
+                    <span className="accent">•</span>
+                    <span className="min-w-0">{b}</span>
+                  </li>
                 ))}
-              </div>
-            ) : null}
-          </section>
+              </ul>
+
+              {tags.length ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {tags.map((t: string) => (
+                    <span key={t} className="panel panel-glow px-2 py-1 text-b5 muted">
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          </MountSection>
 
           {/* Links & Trust */}
-          <section className="panel p-6">
-            <div className="text-b5 muted">LINKS</div>
+          <MountSection delay={2}>
+            <section className="panel panel-glow p-6">
+              <div className="text-b5 muted">LINKS</div>
 
-            <div className="mt-4 flex flex-col gap-2">
-              {n.links?.repo ? (
-                <a className="btn text-b5" href={n.links.repo} target="_blank" rel="noreferrer">
-                  ⎘ Repo
-                </a>
-              ) : null}
-              {n.links?.velog ? (
-                <a className="btn text-b5" href={n.links.velog} target="_blank" rel="noreferrer">
-                  ✎ Blog
-                </a>
-              ) : null}
-              {n.links?.live ? (
-                <a className="btn text-b5" href={n.links.live} target="_blank" rel="noreferrer">
-                  ▶ Live
-                </a>
-              ) : null}
-            </div>
+              <div className="mt-4 flex flex-col gap-2">
+                {n.links?.repo ? (
+                  <a className="btn text-b5" href={n.links.repo} target="_blank" rel="noreferrer">
+                    ⎘ Repo
+                  </a>
+                ) : null}
+                {n.links?.velog ? (
+                  <a className="btn text-b5" href={n.links.velog} target="_blank" rel="noreferrer">
+                    ✎ Velog
+                  </a>
+                ) : null}
+                {n.links?.live ? (
+                  <a className="btn text-b5" href={n.links.live} target="_blank" rel="noreferrer">
+                    ▶ Live
+                  </a>
+                ) : null}
+              </div>
 
-            <div className="mt-4 text-b4 muted typo space-y-1">
-              <div>- Repo/Blog 링크가 있으면 문제 해결 과정까지 검증 가능하다.</div>
-              <div>- Live가 있으면 실제 동작 화면까지 바로 확인 가능하다.</div>
-            </div>
-          </section>
+              <div className="mt-4 text-b4 muted typo space-y-1">
+                <div>- Repo/Blog 링크가 있으면 문제 해결 과정까지 검증 가능하다.</div>
+                <div>- Live가 있으면 실제 동작 화면까지 바로 확인 가능하다.</div>
+              </div>
+            </section>
+          </MountSection>
 
           {/* Navigation */}
-          <section className="panel p-6">
-            <div className="text-b5 muted">NAV</div>
+          <MountSection delay={3}>
+            <section className="panel panel-glow p-6">
+              <div className="text-b5 muted">NAV</div>
 
-            <div className="mt-4 flex flex-col gap-2">
-              <Link href="/patch-notes" className="btn text-b5">
-                ← Back to Patch Notes
-              </Link>
-              <Link href="/contents" className="btn text-b5">
-                Content Select →
-              </Link>
-              <Link href="/" className="btn text-b5">
-                Launcher →
-              </Link>
-            </div>
-          </section>
+              <div className="mt-4 flex flex-col gap-2">
+                <Link href="/patch-notes" className="btn text-b5">
+                  ← Back to Patch Notes
+                </Link>
+                <Link href="/contents" className="btn text-b5">
+                  Content Select →
+                </Link>
+                <Link href="/" className="btn text-b5">
+                  Launcher →
+                </Link>
+              </div>
+            </section>
+          </MountSection>
         </aside>
 
         {/* RIGHT LOG */}
-        <section className="panel p-6 md:p-8">
-          <div className="text-b5 muted">CHANGELOG</div>
-          <article className="mt-5 prose prose-invert max-w-none">
-            <Mdx content={content} />
-          </article>
-        </section>
+        <MountSection delay={1}>
+          <section className="panel panel-glow p-6 md:p-8">
+            <div className="text-b5 muted">CHANGELOG</div>
+            <article className="mt-5 prose prose-invert max-w-none">
+              <Mdx content={content} />
+            </article>
+          </section>
+        </MountSection>
       </div>
     </>
   )
@@ -142,7 +154,6 @@ function buildBulletSummary(n: {
   if (version) bullets.push(`버전: ${version}`)
   if (tags.length) bullets.push(`키워드: ${tags.map((t) => `#${t}`).join(' ')}`)
 
-  // 최소 3개 유지
   while (bullets.length < 3) {
     bullets.push('변경 이유 / 적용 내용 / 결과를 본문에서 확인할 수 있다.')
   }

@@ -7,6 +7,7 @@ import { getProjectBySlug, getProjectSlugs } from '@/lib/content'
 import { RememberLastSeen } from '@/components/RememberLastSeen'
 import ProjectHud from '@/components/ProjectHud'
 import { TechRolePanel } from '@/components/TechRolePanel'
+import MountSection from '@/components/MountSection'
 
 export const dynamic = 'force-static'
 
@@ -16,7 +17,7 @@ export async function generateStaticParams() {
 }
 
 function Chip({ children }: { children: React.ReactNode }) {
-  return <span className="panel px-2 py-1 text-b5 muted whitespace-nowrap">{children}</span>
+  return <span className="panel panel-glow px-2 py-1 text-b5 muted whitespace-nowrap">{children}</span>
 }
 
 function periodText(p?: { start?: string; end?: string }) {
@@ -41,159 +42,148 @@ export default async function ProjectDetailPage({
       {/* last seen 저장(continue 용) */}
       <RememberLastSeen type="project" slug={slug} />
 
-      {/* 상단 HUD */}
-      <ProjectHud project={p} />
+      {/* 상단 HUD (상단은 즉시 보여야 자연스러움) */}
+      <MountSection delay={0}>
+        <ProjectHud project={p} />
+      </MountSection>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[360px_1fr]">
         {/* LEFT NAV / META */}
         <aside className="space-y-6">
           {/* NAV */}
-          <section className="panel p-6">
-            <div className="text-b5 muted">NAV</div>
-            <div className="mt-4 flex flex-col gap-2">
-              <Link href="/contents" className="btn text-b5">
-                ← Back to Contents
-              </Link>
-              <Link href={`/patch-notes/project/${p.slug}`} className="btn text-b5">
-                Patch Notes →
-              </Link>
-              
-            </div>
-
-            {p.links ? (
-              <div className="mt-5 space-y-2">
-                <div className="text-b5 muted">LINKS</div>
-                <div className="flex flex-col gap-2">
-                  {p.links.live ? (
-                    <a className="btn text-b5" href={p.links.live} target="_blank" rel="noreferrer">
-                      ▶ Live
-                    </a>
-                  ) : null}
-                  {p.links.repo ? (
-                    <a className="btn text-b5" href={p.links.repo} target="_blank" rel="noreferrer">
-                      ⎘ Repo
-                    </a>
-                  ) : null}
-                  {p.links.blog ? (
-                    <a className="btn text-b5" href={p.links.blog} target="_blank" rel="noreferrer">
-                      ✎ Blog
-                    </a>
-                  ) : null}
-                </div>
+          <MountSection delay={1}>
+            <section className="panel panel-glow p-6">
+              <div className="text-b5 muted">NAV</div>
+              <div className="mt-4 flex flex-col gap-2">
+                <Link href="/contents" className="btn text-b5">
+                  ← Back to Contents
+                </Link>
+                <Link href={`/patch-notes/project/${p.slug}`} className="btn text-b5">
+                  Patch Notes →
+                </Link>
               </div>
-            ) : null}
-          </section>
+
+              
+            </section>
+          </MountSection>
 
           {/* QUICK SUMMARY */}
-          <section className="panel p-6">
-            <div className="text-b5 muted">QUICK SUMMARY</div>
-            <ul className="mt-3 space-y-2 text-b3 muted typo">
-              {p.team?.role ? (
-                <li>
-                  <span className="accent">•</span> 역할: {p.team.role}
-                </li>
-              ) : null}
-              {periodText(p.period) ? (
-                <li>
-                  <span className="accent">•</span> 기간: {periodText(p.period)}
-                </li>
-              ) : null}
-              {p.highlights?.[0] ? (
-                <li>
-                  <span className="accent">•</span> 핵심: {p.highlights[0]}
-                </li>
-              ) : null}
-            </ul>
+          <MountSection delay={2}>
+            <section className="panel panel-glow p-6">
+              <div className="text-b5 muted">QUICK SUMMARY</div>
+              <ul className="mt-3 space-y-2 text-b3 muted typo">
+                {p.team?.role ? (
+                  <li>
+                    <span className="accent">•</span> 역할: {p.team.role}
+                  </li>
+                ) : null}
+                {periodText(p.period) ? (
+                  <li>
+                    <span className="accent">•</span> 기간: {periodText(p.period)}
+                  </li>
+                ) : null}
+                {p.highlights?.[0] ? (
+                  <li>
+                    <span className="accent">•</span> 핵심: {p.highlights[0]}
+                  </li>
+                ) : null}
+              </ul>
 
-            {(p.keywords ?? []).length ? (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {(p.keywords ?? []).slice(0, 6).map((k) => (
-                  <Chip key={k}>#{k}</Chip>
-                ))}
-              </div>
-            ) : null}
-          </section>
+              {(p.keywords ?? []).length ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {(p.keywords ?? []).slice(0, 6).map((k) => (
+                    <Chip key={k}>#{k}</Chip>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          </MountSection>
 
           {/* META */}
-          <section className="panel p-6">
-            <div className="text-b5 muted">META</div>
+          <MountSection delay={3}>
+            <section className="panel panel-glow p-6">
+              <div className="text-b5 muted">META</div>
 
-            <div className="mt-4 space-y-3 text-b4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="text-b5 muted">ROLE</div>
-                <div className="text-b4">{p.team?.role ?? '—'}</div>
-              </div>
+              <div className="mt-4 space-y-3 text-b4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-b5 muted">ROLE</div>
+                  <div className="text-b4">{p.team?.role ?? '—'}</div>
+                </div>
 
-              <div className="flex items-center justify-between gap-4">
-                <div className="text-b5 muted">TEAM</div>
-                <div className="text-b4">
-                  {p.team?.composition?.length ? p.team.composition.join(' · ') : '—'}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-b5 muted">TEAM</div>
+                  <div className="text-b4">{p.team?.composition?.length ? p.team.composition.join(' · ') : '—'}</div>
+                </div>
+
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-b5 muted">PERIOD</div>
+                  <div className="text-b4">{periodText(p.period) ?? '—'}</div>
+                </div>
+
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-b5 muted">STATUS</div>
+                  <div className="text-b4">{p.status ?? '—'}</div>
+                </div>
+
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-b5 muted">VERSION</div>
+                  <div className="text-b4">{p.version ?? '—'}</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-4">
-                <div className="text-b5 muted">PERIOD</div>
-                <div className="text-b4">{periodText(p.period) ?? '—'}</div>
-              </div>
-
-              <div className="flex items-center justify-between gap-4">
-                <div className="text-b5 muted">STATUS</div>
-                <div className="text-b4">{p.status ?? '—'}</div>
-              </div>
-
-              <div className="flex items-center justify-between gap-4">
-                <div className="text-b5 muted">VERSION</div>
-                <div className="text-b4">{p.version ?? '—'}</div>
-              </div>
-            </div>
-
-            {/* STACK chips (tech를 flat하게) */}
-            {p.tech ? (
-              <div className="mt-5">
-                <div className="text-b5 muted">STACK</div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {Object.values(p.tech)
-                    .flat()
-                    .slice(0, 14)
-                    .map((t) => (
-                      <Chip key={t}>{t}</Chip>
-                    ))}
+              {p.tech ? (
+                <div className="mt-5">
+                  <div className="text-b5 muted">STACK</div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {Object.values(p.tech)
+                      .flat()
+                      .slice(0, 14)
+                      .map((t) => (
+                        <Chip key={t}>{t}</Chip>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ) : null}
-          </section>
+              ) : null}
+            </section>
+          </MountSection>
         </aside>
 
         {/* RIGHT */}
         <div className="space-y-6">
-          {/* ✅ HIGHLIGHTS를 오른쪽 메인으로 */}
+          {/* HIGHLIGHTS */}
           {p.highlights?.length ? (
-            <section className="panel p-6 md:p-8">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-b5 muted">HIGHLIGHTS</div>
-                  <div className="text-h3 mt-2">핵심 성과/기여</div>
-                  
-                </div>
-                <div className="text-b5 muted">{p.highlights.length} items</div>
-              </div>
-
-              <div className="mt-6 grid gap-3">
-                {p.highlights.slice(0, 12).map((h, idx) => (
-                  <div key={`${idx}-${h}`} className="panel panel-glow p-5">
-                    <div className="text-b3 typo">
-                      <span className="accent">•</span> {h}
-                    </div>
+            <MountSection delay={1}>
+              <section className="panel panel-glow p-6 md:p-8">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="text-b5 muted">HIGHLIGHTS</div>
+                    <div className="text-h3 mt-2">핵심 성과/기여</div>
                   </div>
-                ))}
-              </div>
-            </section>
+                  <div className="text-b5 muted">{p.highlights.length} items</div>
+                </div>
+
+                <div className="mt-6 grid gap-3">
+                  {p.highlights.slice(0, 12).map((h, idx) => (
+                    <div key={`${idx}-${h}`} className="panel panel-glow p-5">
+                      <div className="text-b3 typo">
+                        <span className="accent">•</span> {h}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </MountSection>
           ) : null}
 
           {/* TECH as roles */}
-          <TechRolePanel p={p} />
+          <MountSection delay={2}>
+            <div className="panel panel-glow">
+              <TechRolePanel p={p} />
+            </div>
+          </MountSection>
 
-          {/* DETAIL MDX (원하면 여기 다시 붙이면 됨) */}
+          {/* DETAIL MDX */}
+          {/* <MountSection delay={3}>...</MountSection> */}
         </div>
       </div>
     </>

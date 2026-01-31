@@ -93,11 +93,7 @@ export default function ProjectHud({ project: p }: { project: ProjectFrontMatter
               ⎘ Repo
             </a>
           ) : null}
-          {p.links.blog ? (
-            <a className="btn text-b5" href={p.links.blog} target="_blank" rel="noreferrer">
-              ✎ Notes
-            </a>
-          ) : null}
+          
         </div>
       ) : null}
 
