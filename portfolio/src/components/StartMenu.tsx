@@ -224,7 +224,7 @@ export default function StartMenu() {
       {/* MAIN CTA */}
       <div className="mt-8 grid gap-3 md:grid-cols-2">
         <button type="button" onClick={goProjects} className="btn text-b3 justify-center">
-          ▶ Projects
+          ▶ Contents
         </button>
         <button type="button" onClick={goPatch} className="btn text-b3 justify-center">
           ✦ Patch Notes

@@ -30,14 +30,7 @@ export default async function ContentsPage() {
             </p>
 
             {/* CONTROLS */}
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-b5 muted">
-              <span className="panel px-2 py-1 text-b5">↑↓←→</span>
-              이동
-              <span className="panel px-2 py-1 text-b5 ml-2">Enter</span>
-              열기
-              <span className="panel px-2 py-1 text-b5 ml-2">ESC</span>
-              뒤로
-            </div>
+           
           </div>
 
          

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import React from 'react'
 
 const ITEMS = [
-  { href: '/', label: 'Home', icon: '⌂' },
+  { href: '/', label: 'Launcher', icon: '⌂' },
   { href: '/contents', label: 'Contents', icon: '▦' },
   { href: '/patch-notes', label: 'Patch', icon: '⟳' },
 ]

@@ -57,9 +57,7 @@ export default async function ProjectDetailPage({
               <Link href={`/patch-notes/project/${p.slug}`} className="btn text-b5">
                 Patch Notes →
               </Link>
-              <Link href="/" className="btn text-b5">
-                Launcher →
-              </Link>
+              
             </div>
 
             {p.links ? (

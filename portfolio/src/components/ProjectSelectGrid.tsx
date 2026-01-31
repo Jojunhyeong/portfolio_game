@@ -134,7 +134,7 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
                 <span className="accent">TTAK</span>은 그 흐름이 가장 잘 드러나는 프로젝트입니다.
               </p>
             </div>
-            <div className="text-b5 muted">↑↓←→ 이동 · Enter 오픈 · ESC 뒤로</div>
+           
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
