@@ -101,10 +101,8 @@ export default function PatchNoteHud({ note: n }: { note: PatchNoteFrontMatter }
         </div>
       </div>
 
-      <div className="mt-4 text-b5 muted">
-        HOTKEY: <span className="accent">ESC</span> back · <span className="accent">C</span> contents ·{' '}
-        <span className="accent">P</span> patch notes · <span className="accent">H</span> home
-      </div>
+      
+
     </header>
   )
 }

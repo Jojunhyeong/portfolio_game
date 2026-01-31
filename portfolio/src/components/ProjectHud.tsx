@@ -97,10 +97,7 @@ export default function ProjectHud({ project: p }: { project: ProjectFrontMatter
         </div>
       ) : null}
 
-      <div className="mt-5 text-b5 muted">
-        HOTKEY: <span className="accent">ESC</span> back · <span className="accent">C</span> contents ·{' '}
-        <span className="accent">P</span> patch notes · <span className="accent">H</span> home
-      </div>
+     
     </header>
   )
 }
