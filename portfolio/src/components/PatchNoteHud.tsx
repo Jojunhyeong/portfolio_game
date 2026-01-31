@@ -38,39 +38,7 @@ export default function PatchNoteHud({ note: n }: { note: PatchNoteFrontMatter }
   const router = useRouter()
   const icon = iconOf(n.kind)
 
-  // ✅ HOTKEY 실제 동작
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      const tag = (document.activeElement?.tagName ?? '').toLowerCase()
-      if (tag === 'input' || tag === 'textarea' || tag === 'select') return
 
-      const key = e.key.toLowerCase()
-
-      if (key === 'escape') {
-        e.preventDefault()
-        router.back()
-        return
-      }
-      if (key === 'c') {
-        e.preventDefault()
-        router.push('/contents')
-        return
-      }
-      if (key === 'p') {
-        e.preventDefault()
-        router.push('/patch-notes')
-        return
-      }
-      if (key === 'h') {
-        e.preventDefault()
-        router.push('/')
-        return
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [router])
 
   const headline = `${n.version ? `${n.version} ` : ''}${icon} ${n.title}`
 
