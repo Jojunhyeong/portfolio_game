@@ -138,7 +138,7 @@ export function TechRolePanel({ p }: { p: ProjectFrontMatter }) {
       <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
           <SectionTitle>TECH (as roles)</SectionTitle>
-          <div className="text-b3 mt-2">기술을 “역할”로 번역해서, 왜 이 스택을 선택했는지 설명한다.</div>
+          <div className="text-b3 mt-2">사용한 기술</div>
         </div>
         <div className="text-b5 muted">{totalCount} items</div>
       </div>

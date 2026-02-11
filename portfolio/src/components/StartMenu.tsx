@@ -226,12 +226,14 @@ export default function StartMenu() {
                   date: '2025-12',
                   subtitle:
                     'Tailwind v4 기반 타이포그래피 토큰/유틸 구조를 설계하고 사용 규칙을 문서화했습니다.',
+                    href: 'https://velog.io/@jojh0323/%EA%B8%B0%ED%9A%8D%EC%95%88-%ED%83%80%EC%9D%B4%ED%8F%AC-%EC%8A%A4%ED%8E%99%EC%9D%84-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EC%BD%94%EB%93%9C%EB%A1%9C-%EC%98%AE%EA%B8%B0%EA%B8%B0-Tailwind-v4-globals.css'
                 },
                 {
                   slug: 'project-embed-patchnotes',
                   title: 'OAUTH Login Hotfix',
                   date: '2026-01',
                   subtitle: '도메인/쿠키/CORS 이슈를 추적하며 OAUTH 로그인 흐름을 안정화했습니다.',
+                  href:'https://velog.io/@jojh0323/OAUTH-%EC%82%BD%EC%A7%88%EA%B8%B0-1-%EC%99%84%EC%A0%84%ED%9E%88-%EB%8B%A4%EB%A5%B8-%EB%8F%84%EB%A9%94%EC%9D%B8%EC%97%90%EC%84%9C-%EC%8B%9C%EC%9E%91%ED%95%9C-%EC%8B%A4%ED%8C%A8'
                 },
               ]}
             />

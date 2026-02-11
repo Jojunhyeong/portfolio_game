@@ -56,7 +56,7 @@ export default async function ProjectDetailPage({
               <div className="text-b5 muted">NAV</div>
               <div className="mt-4 flex flex-col gap-2">
                 <Link href="/contents" className="btn text-b5">
-                  ← Back to Contents
+                  ← Back to Projects
                 </Link>
                 <Link href={`/patch-notes/project/${p.slug}`} className="btn text-b5">
                   Patch Notes →

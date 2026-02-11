@@ -10,6 +10,7 @@ type PatchNoteLite = {
   date?: string // "2026-01-31" 같은 형태면 좋음
   subtitle?: string
   projectSlug?: string // 있으면 좋음 (없어도 동작)
+  href?: string
 }
 
 export default function RecentPatchNotes({
@@ -38,7 +39,7 @@ export default function RecentPatchNotes({
           {items.slice(0, 3).map((n) => (
             <Link
               key={n.slug}
-              href={`/patch-notes/${n.slug}`}
+              href={`${n.href}`}
               className="panel panel-glow p-4 hover:translate-y-[-1px] transition"
             >
               <div className="flex items-start justify-between gap-3">

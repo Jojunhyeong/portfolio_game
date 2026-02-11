@@ -7,7 +7,7 @@ import React from 'react'
 
 const ITEMS = [
   { href: '/', label: 'Launcher', icon: '⌂' },
-  { href: '/contents', label: 'Contents', icon: '▦' },
+  { href: '/contents', label: 'Project', icon: '▦' },
   { href: '/patch-notes', label: 'Patch', icon: '⟳' },
 ]
 

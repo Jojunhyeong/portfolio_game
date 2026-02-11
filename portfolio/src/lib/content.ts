@@ -29,8 +29,8 @@ export type ProjectFrontMatter = {
   myWork?: string[]
 
   /** ✅ 카드에서 쓸 이미지 */
-  cover?: string   // e.g. "/chop_logo.png" or "/projects/chop/cover.png"
-  logo?: string    // e.g. "/chop_logo.png"
+  cover?: string // e.g. "/chop_logo.png" or "/projects/chop/cover.png"
+  logo?: string // e.g. "/chop_logo.png"
 }
 
 export type PatchNoteFrontMatter = {
@@ -43,6 +43,11 @@ export type PatchNoteFrontMatter = {
   summary?: string
 
   project?: string
+
+  /** ✅ 프로젝트 페이지에서 대표로 노출할지 */
+  featured?: boolean
+  /** ✅ 대표 노출 순서 (작을수록 먼저) */
+  featuredOrder?: number
 
   links?: {
     project?: string
@@ -81,6 +86,10 @@ export type PatchNoteLite = Pick<
 > & {
   project?: string
   links?: PatchNoteFrontMatter['links']
+
+  /** ✅ 큐레이션용 */
+  featured?: boolean
+  featuredOrder?: number
 }
 
 async function ensureDirReadable(dirPath: string) {
@@ -106,6 +115,14 @@ function slugFromFilename(filename: string) {
 
 function safeString(v: unknown, fallback = '') {
   return typeof v === 'string' ? v : fallback
+}
+
+function safeBoolean(v: unknown, fallback = false) {
+  return typeof v === 'boolean' ? v : fallback
+}
+
+function safeNumber(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) ? v : undefined
 }
 
 async function readMdxFile<TFrontMatter>(filePath: string): Promise<MdxItem<TFrontMatter>> {
@@ -152,7 +169,6 @@ export async function getProjectsAll(): Promise<ProjectLite[]> {
       team: p.team,
       links: p.links,
 
-      // ✅ 여기 추가!
       cover: p.cover,
       logo: p.logo,
     }
@@ -202,6 +218,19 @@ function sortPatchByDateDesc(a: PatchNoteLite, b: PatchNoteLite) {
   return bd.localeCompare(ad)
 }
 
+/** featuredOrder 오름차순(작을수록 먼저), 그 다음 최신순 */
+function sortFeaturedFirst(a: PatchNoteLite, b: PatchNoteLite) {
+  const af = a.featured ? 0 : 1
+  const bf = b.featured ? 0 : 1
+  if (af !== bf) return af - bf
+
+  const ao = a.featuredOrder ?? 999
+  const bo = b.featuredOrder ?? 999
+  if (ao !== bo) return ao - bo
+
+  return sortPatchByDateDesc(a, b)
+}
+
 export async function getPatchNotesAll(): Promise<PatchNoteLite[]> {
   const items = await readMdxDir<PatchNoteFrontMatter>(PATCH_DIR)
 
@@ -216,16 +245,57 @@ export async function getPatchNotesAll(): Promise<PatchNoteLite[]> {
       summary: p.summary,
       project: resolvePatchProject(p),
       links: p.links,
+
+      featured: safeBoolean(p.featured, false),
+      featuredOrder: safeNumber(p.featuredOrder),
     }
   })
 
+  // 전체 리스트는 “최신순”을 기본으로 유지
   return list.sort(sortPatchByDateDesc)
 }
 
-export async function getPatchNotesByProject(projectSlug: string): Promise<PatchNoteLite[]> {
+type GetPatchNotesByProjectOptions = {
+  /** 대표 패치만 보고 싶으면 true */
+  featuredOnly?: boolean
+  /** 대표 우선 + 부족하면 보충해서 limit 맞춤 (기본 true) */
+  fillToLimit?: boolean
+  /** 노출 개수 제한 (기본 6) */
+  limit?: number
+}
+
+/**
+ * 프로젝트별 패치노트
+ * - 기본: 대표 우선 + 부족하면 보충 + 최대 6개
+ * - 전체 타임라인이 필요하면 limit 크게 주거나 fillToLimit 끄면 됨
+ */
+export async function getPatchNotesByProject(
+  projectSlug: string,
+  options: GetPatchNotesByProjectOptions = {},
+): Promise<PatchNoteLite[]> {
+  const { featuredOnly = false, fillToLimit = true, limit = 6 } = options
+
   const all = await getPatchNotesAll()
   const key = projectSlug.trim()
-  return all.filter((n) => (n.project ?? '').trim() === key).sort(sortPatchByDateDesc)
+
+  const scoped = all.filter((n) => (n.project ?? '').trim() === key)
+
+  if (featuredOnly) {
+    return scoped.filter((n) => n.featured).sort(sortFeaturedFirst).slice(0, limit)
+  }
+
+  // 대표 우선 정렬
+  const sorted = scoped.sort(sortFeaturedFirst)
+
+  if (!fillToLimit) {
+    return sorted.slice(0, limit)
+  }
+
+  // 대표 먼저, 부족하면 나머지 최신순으로 보충
+  const featured = sorted.filter((n) => n.featured).sort(sortFeaturedFirst)
+  const rest = sorted.filter((n) => !n.featured).sort(sortPatchByDateDesc)
+
+  return [...featured, ...rest].slice(0, limit)
 }
 
 export async function getPatchNoteSlugs(): Promise<string[]> {
