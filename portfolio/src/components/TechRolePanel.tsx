@@ -10,9 +10,6 @@ function Chip({ children }: { children: React.ReactNode }) {
   )
 }
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <div className="text-b5 muted">{children}</div>
-}
 
 const DEFAULT_ROLE_MAP: Record<string, { role: string; value: string }> = {
   'Next.js': {
@@ -134,55 +131,42 @@ export function TechRolePanel({ p }: { p: ProjectFrontMatter }) {
   const totalCount = Object.values(p.tech).reduce((acc, arr) => acc + arr.length, 0)
 
   return (
-    <section className="panel p-6 md:p-8">
-      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-        <div>
-          <SectionTitle>TECH (as roles)</SectionTitle>
-          <div className="text-b3 mt-2">사용한 기술</div>
-        </div>
-        <div className="text-b5 muted">{totalCount} items</div>
+    <section className="panel panel-glow p-6 md:p-8">
+      {/* // TECH STACK 라벨 */}
+      <div className="flex items-center gap-3 mb-6">
+        <span className="text-b5 font-bold" style={{ color: 'rgb(var(--accent))' }}>//</span>
+        <span className="text-b5 muted" style={{ letterSpacing: '0.12em' }}>TECH STACK</span>
+        <div className="flex-1 border-t border-white/8" />
+        <span className="text-b5 muted">{totalCount} items</span>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2">
         {Object.entries(p.tech).map(([group, items]) => (
-          <div key={group} className="panel p-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-b5 muted">{group.toUpperCase()}</div>
-              <Chip>{items.length}</Chip>
+          <div key={group}>
+            {/* 그룹 헤더 */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-b5 font-bold" style={{ color: 'rgba(var(--accent),0.6)' }}>//</span>
+              <span className="text-b5 muted" style={{ letterSpacing: '0.1em' }}>{group.toUpperCase()}</span>
+              <span className="text-b5 muted opacity-50">({items.length})</span>
             </div>
 
-            <div className="mt-4 space-y-3">
+            <div className="space-y-2">
               {items.map((t) => {
-  const { role, value } = toRoleSentence(t)
-
-  return (
-    <div
-      key={t}
-      className="rounded-[14px] border border-white/10 bg-white/5 p-4"
-    >
-      {/* ✅ HEADER: title + badge 를 같은 흐름에 둬서 절대 안 겹치게 */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          {/* title은 2줄까지 허용(긴 스택명 대응) */}
-          <div className="text-b3 leading-snug break-words">
-            {t}
-          </div>
-        </div>
-
-        {/* badge는 오른쪽에 고정, 흐름 안에 있으니 겹칠 일이 없음 */}
-        <div className="shrink-0">
-          <Chip>{role}</Chip>
-        </div>
-      </div>
-
-      {/* ✅ BODY: 본문은 아래에서 풀폭으로 이어짐 */}
-      <div className="mt-2 text-b4 muted typo">
-        {value}
-      </div>
-    </div>
-  )
-})}
-
+                const { role, value } = toRoleSentence(t)
+                return (
+                  <div
+                    key={t}
+                    className="p-4 rounded-lg"
+                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="text-b3 font-medium">{t}</div>
+                      <Chip>{role}</Chip>
+                    </div>
+                    <div className="text-b4 muted typo">{value}</div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         ))}

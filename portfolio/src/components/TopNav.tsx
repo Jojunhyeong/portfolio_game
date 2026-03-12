@@ -47,7 +47,7 @@ export default function TopNav() {
 
           {/* RIGHT: 외부 링크 (데스크탑만) */}
           <div className="hidden sm:flex items-center justify-end gap-2">
-            <a className="hud-btn" href="https://github.com/" target="_blank" rel="noreferrer">
+            <a className="hud-btn" href="https://github.com/Jojunhyeong" target="_blank" rel="noreferrer">
               GitHub ↗
             </a>
             <a className="hud-btn" href="https://velog.io/@jojh0323/posts" target="_blank" rel="noreferrer">

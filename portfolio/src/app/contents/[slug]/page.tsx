@@ -17,7 +17,18 @@ export async function generateStaticParams() {
 }
 
 function Chip({ children }: { children: React.ReactNode }) {
-  return <span className="panel panel-glow px-2 py-1 text-b5 muted whitespace-nowrap">{children}</span>
+  return <span className="panel px-2 py-1 text-b5 muted whitespace-nowrap">{children}</span>
+}
+
+function SectionLabel({ label, right }: { label: string; right?: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <span className="text-b5 font-bold" style={{ color: 'rgb(var(--accent))' }}>//</span>
+      <span className="text-b5 muted" style={{ letterSpacing: '0.12em' }}>{label}</span>
+      <div className="flex-1 border-t border-white/8" />
+      {right ? <span className="text-b5 muted">{right}</span> : null}
+    </div>
+  )
 }
 
 function periodText(p?: { start?: string; end?: string }) {
@@ -39,108 +50,75 @@ export default async function ProjectDetailPage({
 
   return (
     <>
-      {/* last seen 저장(continue 용) */}
       <RememberLastSeen type="project" slug={slug} />
 
-      {/* 상단 HUD (상단은 즉시 보여야 자연스러움) */}
       <MountSection delay={0}>
         <ProjectHud project={p} />
       </MountSection>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[360px_1fr]">
-        {/* LEFT NAV / META */}
-        <aside className="space-y-6">
-          {/* NAV */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-[340px_1fr]">
+        {/* LEFT SIDEBAR */}
+        <aside className="space-y-4">
+          {/* NAVIGATION */}
           <MountSection delay={1}>
-            <section className="panel panel-glow p-6">
-              <div className="text-b5 muted">NAV</div>
-              <div className="mt-4 flex flex-col gap-2">
-                <Link href="/contents" className="btn text-b5">
-                  ← Back to Projects
-                </Link>
-                <Link href={`/patch-notes/project/${p.slug}`} className="btn text-b5">
-                  Patch Notes →
-                </Link>
+            <section className="panel panel-glow p-5">
+              <SectionLabel label="NAVIGATION" />
+              <div className="flex flex-col gap-2">
+                <Link href="/contents" className="btn text-b5">← Back to Projects</Link>
+                {p.links?.blog ? (
+                  <a href={p.links.blog} target="_blank" rel="noreferrer" className="btn text-b5">
+                    ✎ Patch Notes →
+                  </a>
+                ) : null}
               </div>
-
-              
             </section>
           </MountSection>
 
-          {/* QUICK SUMMARY */}
-          <MountSection delay={2}>
-            <section className="panel panel-glow p-6">
-              <div className="text-b5 muted">QUICK SUMMARY</div>
-              <ul className="mt-3 space-y-2 text-b3 muted typo">
-                {p.team?.role ? (
-                  <li>
-                    <span className="accent">•</span> 역할: {p.team.role}
-                  </li>
-                ) : null}
-                {periodText(p.period) ? (
-                  <li>
-                    <span className="accent">•</span> 기간: {periodText(p.period)}
-                  </li>
-                ) : null}
-                {p.highlights?.[0] ? (
-                  <li>
-                    <span className="accent">•</span> 핵심: {p.highlights[0]}
-                  </li>
-                ) : null}
-              </ul>
-
-              {(p.keywords ?? []).length ? (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {(p.keywords ?? []).slice(0, 6).map((k) => (
-                    <Chip key={k}>#{k}</Chip>
+          {/* MY WORK */}
+          {(p as { myWork?: string[] }).myWork?.length ? (
+            <MountSection delay={2}>
+              <section className="panel panel-glow p-5">
+                <SectionLabel label="MY WORK" right={`${(p as { myWork?: string[] }).myWork!.length} items`} />
+                <ul className="space-y-2">
+                  {(p as { myWork?: string[] }).myWork!.map((w, i) => (
+                    <li key={i} className="text-b4 muted flex gap-2">
+                      <span style={{ color: 'rgb(var(--accent))' }} className="shrink-0">▸</span>
+                      <span>{w}</span>
+                    </li>
                   ))}
-                </div>
-              ) : null}
-            </section>
-          </MountSection>
+                </ul>
+              </section>
+            </MountSection>
+          ) : null}
 
           {/* META */}
           <MountSection delay={3}>
-            <section className="panel panel-glow p-6">
-              <div className="text-b5 muted">META</div>
-
-              <div className="mt-4 space-y-3 text-b4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-b5 muted">ROLE</div>
-                  <div className="text-b4">{p.team?.role ?? '—'}</div>
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-b5 muted">TEAM</div>
-                  <div className="text-b4">{p.team?.composition?.length ? p.team.composition.join(' · ') : '—'}</div>
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-b5 muted">PERIOD</div>
-                  <div className="text-b4">{periodText(p.period) ?? '—'}</div>
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-b5 muted">STATUS</div>
-                  <div className="text-b4">{p.status ?? '—'}</div>
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-b5 muted">VERSION</div>
-                  <div className="text-b4">{p.version ?? '—'}</div>
-                </div>
+            <section className="panel panel-glow p-5">
+              <SectionLabel label="META" />
+              <div className="space-y-3">
+                {[
+                  { key: 'ROLE', val: p.team?.role },
+                  { key: 'TEAM', val: p.team?.composition?.join(' · ') },
+                  { key: 'PERIOD', val: periodText(p.period) },
+                  { key: 'STATUS', val: p.status },
+                  { key: 'VERSION', val: p.version },
+                ].map(({ key, val }) =>
+                  val ? (
+                    <div key={key} className="flex items-start justify-between gap-4">
+                      <div className="text-b5 muted shrink-0">{key}</div>
+                      <div className="text-b4 text-right">{val}</div>
+                    </div>
+                  ) : null
+                )}
               </div>
 
               {p.tech ? (
-                <div className="mt-5">
-                  <div className="text-b5 muted">STACK</div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {Object.values(p.tech)
-                      .flat()
-                      .slice(0, 14)
-                      .map((t) => (
-                        <Chip key={t}>{t}</Chip>
-                      ))}
+                <div className="mt-5 pt-4 border-t border-white/8">
+                  <div className="text-b5 muted mb-3" style={{ letterSpacing: '0.1em' }}>STACK</div>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.values(p.tech).flat().slice(0, 14).map((t) => (
+                      <Chip key={t}>{t}</Chip>
+                    ))}
                   </div>
                 </div>
               ) : null}
@@ -148,26 +126,27 @@ export default async function ProjectDetailPage({
           </MountSection>
         </aside>
 
-        {/* RIGHT */}
+        {/* RIGHT CONTENT */}
         <div className="space-y-6">
           {/* HIGHLIGHTS */}
           {p.highlights?.length ? (
             <MountSection delay={1}>
               <section className="panel panel-glow p-6 md:p-8">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="text-b5 muted">HIGHLIGHTS</div>
-                    <div className="text-h3 mt-2">핵심 성과/기여</div>
-                  </div>
-                  <div className="text-b5 muted">{p.highlights.length} items</div>
-                </div>
-
-                <div className="mt-6 grid gap-3">
+                <SectionLabel label="HIGHLIGHTS" right={`${p.highlights.length} items`} />
+                <div className="grid gap-3">
                   {p.highlights.slice(0, 12).map((h, idx) => (
-                    <div key={`${idx}-${h}`} className="panel panel-glow p-5">
-                      <div className="text-b3 typo">
-                        <span className="accent">•</span> {h}
-                      </div>
+                    <div
+                      key={`${idx}-${h}`}
+                      className="flex gap-4 p-4 rounded-lg"
+                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+                    >
+                      <span
+                        className="text-b5 font-bold shrink-0 mt-0.5"
+                        style={{ color: 'rgb(var(--accent))', minWidth: '1.5rem' }}
+                      >
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <div className="text-b3 typo">{h}</div>
                     </div>
                   ))}
                 </div>
@@ -175,15 +154,10 @@ export default async function ProjectDetailPage({
             </MountSection>
           ) : null}
 
-          {/* TECH as roles */}
+          {/* TECH STACK */}
           <MountSection delay={2}>
-            <div className="panel panel-glow">
-              <TechRolePanel p={p} />
-            </div>
+            <TechRolePanel p={p} />
           </MountSection>
-
-          {/* DETAIL MDX */}
-          {/* <MountSection delay={3}>...</MountSection> */}
         </div>
       </div>
     </>

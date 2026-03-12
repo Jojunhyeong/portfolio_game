@@ -3,14 +3,13 @@
 
 import Link from 'next/link'
 import React from 'react'
-import SectionHeader from '@/components/SectionHeader'
 import Image from 'next/image'
 
 function Chip({ children }: { children: React.ReactNode }) {
-  return <span className="panel px-2 py-1 text-b5 muted">{children}</span>
+  return <span className="panel px-2 py-1 text-b5 muted whitespace-nowrap">{children}</span>
 }
 function AccentChip({ children }: { children: React.ReactNode }) {
-  return <span className="panel px-2 py-1 text-b5 accent">{children}</span>
+  return <span className="panel px-2 py-1 text-b5 accent whitespace-nowrap">{children}</span>
 }
 
 type FeaturedProject = {
@@ -19,53 +18,71 @@ type FeaturedProject = {
   subtitle?: string
   summary?: string
   tags?: string[]
-  icon?: string // 🔥 추가
+  icon?: string
+  version?: string
+  status?: string
 }
 
 export default function FeaturedProjects({ items }: { items: FeaturedProject[] }) {
   return (
-    <section className="mt-10">
-      <SectionHeader
-        label="FEATURED"
-        title="대표 프로젝트"
-        desc="가장 많은 고민과 성장을 만든 프로젝트를 중심으로 정리했습니다."
-        right={
-          <Link href="/contents" className="btn btn-ghost h-10 px-3 text-b4">
-            전체 보기 →
-          </Link>
-        }
-      />
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {items.map((p) => (
+        <Link
+          key={p.slug}
+          href={`/contents/${p.slug}`}
+          className="panel panel-glow flex flex-col overflow-hidden hover:-translate-y-1 transition-transform duration-150"
+        >
+          {/* 상단 액센트 라인 */}
+          <div
+            className="h-[2px] w-full shrink-0"
+            style={{
+              background: 'linear-gradient(90deg, rgb(var(--accent)) 0%, rgba(var(--accent-2), 0.6) 60%, transparent 100%)',
+            }}
+          />
 
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {items.map((p) => (
-          <Link
-            key={p.slug}
-            href={`/contents/${p.slug}`}
-            className="panel panel-glow p-5 md:p-6 hover:translate-y-[-1px] transition relative"
-          >
-            {/* 🔥 우측 상단 아이콘 */}
-            {/* 🔥 우측 상단 아이콘 (고정된 40×40 박스) */}
-{p.icon ? (
-  <div className="absolute top-4 right-4 w-16 h-10 flex items-center justify-center">
-    <Image
-      src={p.icon}
-      alt={`${p.title} icon`}
-      width={60}
-      height={60}
-      className="object-contain"
-    />
-  </div>
-) : null}
+          <div className="flex flex-col flex-1 p-5 md:p-6">
+            {/* 버전 + 아이콘 */}
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2 flex-wrap">
+                {p.version ? (
+                  <span
+                    className="px-2 py-0.5 text-b5 rounded border font-medium"
+                    style={{
+                      color: 'rgb(var(--accent))',
+                      borderColor: 'rgba(var(--accent), 0.45)',
+                      background: 'rgba(var(--accent), 0.10)',
+                    }}
+                  >
+                    {p.version}
+                  </span>
+                ) : null}
+                {p.status ? (
+                  <span className="text-b5 muted">{p.status}</span>
+                ) : null}
+              </div>
+              {p.icon ? (
+                <div className="shrink-0 w-10 h-10 flex items-center justify-center opacity-80">
+                  <Image
+                    src={p.icon}
+                    alt={`${p.title} icon`}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                  />
+                </div>
+              ) : null}
+            </div>
 
+            {/* 제목 */}
+            <div className="text-h4">{p.title}</div>
+            {p.subtitle ? <div className="text-b4 muted mt-1 line-clamp-2">{p.subtitle}</div> : null}
 
-            <div className="text-b5 muted">PROJECT</div>
-            <div className="text-b2 mt-2">{p.title}</div>
-            {p.subtitle ? <div className="text-b4 muted mt-1">{p.subtitle}</div> : null}
-
+            {/* 요약 */}
             {p.summary ? (
-              <div className="text-b4 mt-4 line-clamp-3">{p.summary}</div>
+              <div className="text-b4 muted mt-3 line-clamp-3 flex-1 text-white">{p.summary}</div>
             ) : null}
 
+            {/* 태그 */}
             {p.tags?.length ? (
               <div className="mt-4 flex flex-wrap gap-2">
                 {p.tags.slice(0, 4).map((tag, i) =>
@@ -73,9 +90,9 @@ export default function FeaturedProjects({ items }: { items: FeaturedProject[] }
                 )}
               </div>
             ) : null}
-          </Link>
-        ))}
-      </div>
-    </section>
+          </div>
+        </Link>
+      ))}
+    </div>
   )
 }

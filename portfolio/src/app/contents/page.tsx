@@ -1,5 +1,4 @@
 // src/app/contents/page.tsx
-import Link from 'next/link'
 import { getProjectsAll } from '@/lib/content'
 import ProjectSelectGrid from '@/components/ProjectSelectGrid'
 import MountSection from '@/components/MountSection'
@@ -10,62 +9,76 @@ export default async function ContentsPage() {
   const items = await getProjectsAll()
 
   return (
-    <>
+    <div className="space-y-6">
       {/* HEADER */}
       <MountSection delay={0}>
-        <header className="panel panel-glow p-6 md:p-8 sweep">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <div className="text-b5 muted">CONTENT SELECT</div>
-              <div className="text-d3 mt-2">Projects</div>
+        <header
+          className="panel panel-glow p-6 md:p-10"
+          style={{ borderLeft: '3px solid rgb(var(--accent))' }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-b5 font-bold" style={{ color: 'rgb(var(--accent))' }}>//</span>
+            <span className="text-b5 muted" style={{ letterSpacing: '0.12em' }}>CONTENT SELECT</span>
+          </div>
 
-              <p className="text-b2 muted mt-3 typo max-w-[70ch]">
-                프로젝트를 통한 제 성장은
-                <br />
-                하나의 <span className="accent">라이브 서비스의 업데이트 흐름</span>와 닮아 있습니다.
-              </p>
+          <div className="text-d3">Projects</div>
 
-              <p className="text-b3 muted mt-2 typo max-w-[70ch]">
-                각 프로젝트는 그 시점의 고민과 역할을 담고 있으며,
-                <span className="accent"> TTAK</span>에서 가장 완성된 흐름을 확인할 수 있습니다.
-              </p>
+          <p className="text-b3 muted mt-4 typo max-w-[60ch]">
+            하나의 <span className="accent">라이브 서비스가 출시되고 개선</span>되는 흐름처럼,
+            각 프로젝트는 그 시점의 고민과 역할을 담고 있습니다.
+            <br />
+            <span className="accent">TTAK</span>에서 가장 완성된 흐름을 확인할 수 있습니다.
+          </p>
 
-              {/* CONTROLS */}
-              {/* 예: <div className="mt-4 flex gap-2">...</div> */}
+          {/* PROJECT STAGE 범례 */}
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-b4">
+            <div>
+              <span
+                className="px-2 py-0.5 rounded border text-b5 font-medium mr-2"
+                style={{
+                  color: 'rgb(var(--accent))',
+                  borderColor: 'rgba(var(--accent),0.4)',
+                  background: 'rgba(var(--accent),0.08)',
+                }}
+              >
+                EA
+              </span>
+              <span className="muted">Early Access — 도입기</span>
             </div>
-
-            {/* 오른쪽에 뭔가 붙일 예정이면 여기에 */}
-            {/* <div className="shrink-0">...</div> */}
+            <div>
+              <span
+                className="px-2 py-0.5 rounded border text-b5 font-medium mr-2"
+                style={{
+                  color: 'rgb(var(--accent))',
+                  borderColor: 'rgba(var(--accent),0.4)',
+                  background: 'rgba(var(--accent),0.08)',
+                }}
+              >
+                β
+              </span>
+              <span className="muted">Open Beta — 확장·정제</span>
+            </div>
+            <div>
+              <span
+                className="px-2 py-0.5 rounded border text-b5 font-medium mr-2"
+                style={{
+                  color: 'rgb(var(--accent))',
+                  borderColor: 'rgba(var(--accent),0.4)',
+                  background: 'rgba(var(--accent),0.08)',
+                }}
+              >
+                v1+
+              </span>
+              <span className="muted">Official Release — 서비스 완성도</span>
+            </div>
           </div>
         </header>
       </MountSection>
 
       {/* PROJECT GRID */}
       <MountSection delay={1}>
-        <div className="mt-6">
-          <ProjectSelectGrid projects={items} />
-        </div>
+        <ProjectSelectGrid projects={items} />
       </MountSection>
-
-      {/* 🔎 LEGEND */}
-      <MountSection delay={2}>
-        <section className="panel panel-glow p-5 mt-6">
-          <div className="text-b5 muted">PROJECT STAGE</div>
-
-          <ul className="mt-3 space-y-1 text-b4 muted typo">
-            <li>
-              <span className="accent">Early Access</span> · 프론트엔드 개발자로서의 출발과 기본기를 다진{' '}
-              <span className="accent">도입기</span>
-            </li>
-            <li>
-              <span className="accent">Open Beta</span> · 역할과 책임이 분명해지고 기능을 확장·정제한 단계
-            </li>
-            <li>
-              <span className="accent">Official Release</span> · 운영과 개선까지 고려하며 서비스 완성도를 끌어올린 단계
-            </li>
-          </ul>
-        </section>
-      </MountSection>
-    </>
+    </div>
   )
 }

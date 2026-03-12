@@ -20,13 +20,12 @@ export default function BottomDock() {
   const pathname = usePathname() ?? '/'
 
   return (
-    <div className="fixed  bottom-4 z-50 right-4">
-      <div className="shell">
+    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2">
         <div className="dock" role="navigation" aria-label="Bottom navigation">
           {ITEMS.map((it) => {
             const active = isActive(pathname, it.href)
             return (
-              <Link key={it.href} href={it.href} className={active ? 'dock-item is-active' : 'dock-item'}>
+              <Link key={it.href} href={it.href} className={active ? 'dock-item dock-item-active' : 'dock-item'}>
                 <span className="dock-ic" aria-hidden="true">
                   {it.icon}
                 </span>
@@ -39,7 +38,6 @@ export default function BottomDock() {
 
           
         </div>
-      </div>
     </div>
   )
 }

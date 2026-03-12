@@ -7,10 +7,10 @@ import { useRouter } from 'next/navigation'
 import type { ProjectLite } from '@/lib/content'
 
 function Chip({ children }: { children: React.ReactNode }) {
-  return <span className="panel px-2 py-1 text-b5 muted">{children}</span>
+  return <span className="panel px-2 py-1 text-b5 muted whitespace-nowrap">{children}</span>
 }
 function AccentChip({ children }: { children: React.ReactNode }) {
-  return <span className="panel px-2 py-1 text-b5 accent">{children}</span>
+  return <span className="panel px-2 py-1 text-b5 accent whitespace-nowrap">{children}</span>
 }
 function safeText(v?: string | null) {
   return (v ?? '').trim()
@@ -24,170 +24,104 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
       const af = a.featured ? 0 : 1
       const bf = b.featured ? 0 : 1
       if (af !== bf) return af - bf
-
       const ao = a.order ?? 999
       const bo = b.order ?? 999
       if (ao !== bo) return ao - bo
-
       return (a.title ?? '').localeCompare(b.title ?? '')
     })
   }, [projects])
 
   const recommended = useMemo(() => sorted.filter((p) => p.featured).slice(0, 2), [sorted])
 
-  // ✅ 선택은 "전체 기준" 딱 하나만
-  const [selected, setSelected] = useState(0)
+  // RECOMMENDED / ALL 섹션 각자 독립 selected
+  const [recSelected, setRecSelected] = useState<number | null>(null)
+  const [allSelected, setAllSelected] = useState<number | null>(null)
 
-  // ✅ ref는 섹션별로 따로 두되, 스크롤 타겟은 우선 ALL에서 찾습니다(중복 렌더라도 안정적)
   const recRefMap = useRef<Record<string, HTMLAnchorElement | null>>({})
   const allRefMap = useRef<Record<string, HTMLAnchorElement | null>>({})
-
-  // ✅ 첫 진입 스크롤 방지 + 키보드 이동 때만 스크롤
   const didMountRef = useRef(false)
-  const lastInputRef = useRef<'init' | 'keyboard' | 'hover' | 'reset'>('init')
 
-  // 리스트 길이 바뀌면 첫 카드 선택(스크롤은 하지 않음)
   useEffect(() => {
-    lastInputRef.current = 'reset'
-    setSelected(0)
+    setRecSelected(null)
+    setAllSelected(null)
   }, [sorted.length])
 
-  // ✅ 선택이 바뀌면: "키보드일 때만" focus + scroll
   useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true
-      return
-    }
-    if (lastInputRef.current !== 'keyboard') return
-
-    const item = sorted[selected]
+    if (!didMountRef.current) { didMountRef.current = true; return }
+    if (allSelected === null) return
+    const item = sorted[allSelected]
     if (!item) return
-
-    // ✅ 스크롤/포커스는 ALL 쪽 element가 있으면 그걸 우선
-    const el = allRefMap.current[item.slug] ?? recRefMap.current[item.slug]
+    const el = allRefMap.current[item.slug]
     if (!el) return
-
     el.focus({ preventScroll: true })
     el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }, [selected, sorted])
+  }, [allSelected, sorted])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const tag = (document.activeElement?.tagName ?? '').toLowerCase()
       if (tag === 'input' || tag === 'textarea' || tag === 'select') return
-
       const cols = window.matchMedia('(min-width: 768px)').matches ? 2 : 1
       const total = sorted.length
       const clamp = (n: number) => Math.max(0, Math.min(total - 1, n))
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        lastInputRef.current = 'keyboard'
-        setSelected((i) => clamp(i + cols))
-        return
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        lastInputRef.current = 'keyboard'
-        setSelected((i) => clamp(i - cols))
-        return
-      }
-      if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        lastInputRef.current = 'keyboard'
-        setSelected((i) => clamp(i + 1))
-        return
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        lastInputRef.current = 'keyboard'
-        setSelected((i) => clamp(i - 1))
-        return
-      }
+      const cur = allSelected ?? 0
+      if (e.key === 'ArrowDown') { e.preventDefault(); setRecSelected(null); setAllSelected(clamp(cur + cols)); return }
+      if (e.key === 'ArrowUp') { e.preventDefault(); setRecSelected(null); setAllSelected(clamp(cur - cols)); return }
+      if (e.key === 'ArrowRight') { e.preventDefault(); setRecSelected(null); setAllSelected(clamp(cur + 1)); return }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); setRecSelected(null); setAllSelected(clamp(cur - 1)); return }
       if (e.key === 'Enter') {
         e.preventDefault()
-        const item = sorted[selected]
+        const item = allSelected !== null ? sorted[allSelected] : null
         if (item?.slug) router.push(`/contents/${item.slug}`)
         return
       }
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        router.back()
-      }
+      if (e.key === 'Escape') { e.preventDefault(); router.back() }
     }
-
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [router, selected, sorted])
+  }, [router, allSelected, sorted])
 
   return (
-    <div className="space-y-6">
-      {/* RECOMMENDED (선택은 전체 기준 하나, 여기서는 표시만) */}
+    <div className="space-y-8">
+      {/* RECOMMENDED */}
       {recommended.length ? (
-        <section className="panel p-6 md:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-b5 muted">RECOMMENDED</div>
-              <div className="text-h3 mt-2">먼저 보고 싶었던 프로젝트</div>
-              <p className="text-b3 muted mt-2 typo">
-                새로운 시도와 시행착오, 그리고 기준이 가장 많이 쌓인 작업을 먼저 정리했습니다.{' '}
-                <span className="accent">TTAK</span>은 그 흐름이 가장 잘 드러나는 프로젝트입니다.
-              </p>
-            </div>
-           
+        <section>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-b5 font-bold select-none" style={{ color: 'rgb(var(--accent))' }}>//</span>
+            <span className="text-b5 muted" style={{ letterSpacing: '0.12em' }}>RECOMMENDED</span>
+            <div className="flex-1 border-t border-white/8" />
+            <span className="text-b5 muted">{recommended.length} picks</span>
           </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {recommended.map((p) => {
-              const idx = sorted.findIndex((x) => x.slug === p.slug)
-              const isSelected = idx >= 0 && selected === idx
-
-              return (
-                <ProjectCard
-                  key={p.slug}
-                  p={p}
-                  selected={isSelected}
-                  onHover={() => {
-                    if (idx < 0) return
-                    lastInputRef.current = 'hover'
-                    setSelected(idx)
-                  }}
-                  ref={(el) => {
-                    recRefMap.current[p.slug] = el
-                  }}
-                />
-              )
-            })}
+          <div className="grid gap-4 md:grid-cols-2">
+            {recommended.map((p, recIdx) => (
+              <ProjectCard
+                key={p.slug}
+                p={p}
+                selected={recSelected === recIdx}
+                onHover={() => { setRecSelected(recIdx); setAllSelected(null) }}
+                ref={(el) => { recRefMap.current[p.slug] = el }}
+              />
+            ))}
           </div>
         </section>
       ) : null}
 
-      {/* ALL (추천 포함 전체) */}
-      <section className="panel p-6 md:p-8">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="text-b5 muted">ALL PROJECTS</div>
-            <div className="text-h3 mt-2">전체 프로젝트</div>
-            <p className="text-b3 muted mt-2 typo">
-              카드에서는 프로젝트의 성격을 한눈에 볼 수 있고, 상세 페이지에서는 역할, 문제 정의, 해결 과정을 확인하실 수 있습니다.
-            </p>
-          </div>
-          <div className="text-b5 muted">{sorted.length} titles</div>
+      {/* ALL PROJECTS */}
+      <section>
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-b5 font-bold select-none" style={{ color: 'rgb(var(--accent))' }}>//</span>
+          <span className="text-b5 muted" style={{ letterSpacing: '0.12em' }}>ALL PROJECTS</span>
+          <div className="flex-1 border-t border-white/8" />
+          <span className="text-b5 muted">{sorted.length} titles</span>
         </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {sorted.map((p, idx) => (
             <ProjectCard
               key={p.slug}
               p={p}
-              selected={selected === idx}
-              onHover={() => {
-                lastInputRef.current = 'hover'
-                setSelected(idx)
-              }}
-              ref={(el) => {
-                allRefMap.current[p.slug] = el
-              }}
+              selected={allSelected === idx}
+              onHover={() => { setAllSelected(idx); setRecSelected(null) }}
+              ref={(el) => { allRefMap.current[p.slug] = el }}
             />
           ))}
         </div>
@@ -202,14 +136,9 @@ const ProjectCard = forwardRef<
 >(function ProjectCard({ p, selected, onHover }, ref) {
   const role = safeText(p.team?.role)
   const keywords = (p.keywords ?? []).slice(0, 4)
-
-  const topBadges = [
-    ...(p.featured ? ['RECOMMENDED'] : []),
-    ...(p.version ? [p.version] : []),
-    ...(role ? [role] : []),
-  ].slice(0, 3)
-
-  const mediaSrc = safeText((p as any).cover) || safeText((p as any).logo)
+  const status = safeText(p.status)
+  const version = safeText(p.version)
+  const icon = safeText(p.cover) || safeText(p.logo)
 
   return (
     <Link
@@ -217,88 +146,102 @@ const ProjectCard = forwardRef<
       ref={ref}
       onMouseEnter={onHover}
       className={[
-        'block',
-        'panel panel-glow sweep',
-        'p-6 md:p-7',
-        selected ? 'selected-slot pulse -translate-y-1' : 'hover:-translate-y-1',
-        'focus:outline-none focus:ring-2 focus:ring-[rgba(var(--accent),0.6)]',
-        'relative overflow-hidden',
+        'panel panel-glow flex flex-col overflow-hidden focus:outline-none',
+        selected
+          ? '-translate-y-1 ring-2 ring-[rgba(var(--accent),0.5)] shadow-[0_0_32px_rgba(var(--accent),0.12)]'
+          : 'hover:-translate-y-1',
+        'transition-all duration-150',
       ].join(' ')}
     >
-      {/* MEDIA */}
-      <div className="relative z-10 mb-5">
-        <div className="relative h-40 w-full overflow-hidden rounded-2xl border border-white/10">
-          {mediaSrc ? (
-            <>
-              <div className="absolute inset-0 bg-black/25" />
+      {/* 배너 영역 — 아이콘 중앙 */}
+      <div
+        className="relative flex items-center justify-center shrink-0 overflow-hidden"
+        style={{
+          height: '9rem',
+          background: 'rgba(255,255,255,0.025)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        {/* 선택 시 배너 글로우 */}
+        {selected ? (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(var(--accent),0.08) 0%, transparent 70%)' }}
+          />
+        ) : null}
 
-              {/* 중앙 로고 */}
-              <div className="absolute inset-0 flex items-center justify-center pt-6">
-                <img
-                  src={mediaSrc}
-                  alt={`${p.title} cover`}
-                  draggable={false}
-                  className="max-h-24 max-w-40 object-contain"
-                />
-              </div>
-
-              <div
-                className="absolute -inset-12 opacity-70"
-                style={{
-                  background:
-                    'radial-gradient(520px 200px at 20% 0%, rgba(var(--accent), .20), transparent 60%), radial-gradient(520px 200px at 80% 0%, rgba(var(--accent-2), .16), transparent 60%)',
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'radial-gradient(620px 220px at 25% 10%, rgba(var(--accent), .22), transparent 60%), radial-gradient(560px 240px at 85% 0%, rgba(var(--accent-2), .18), transparent 58%), linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01))',
-                }}
-              />
-              <div className="absolute inset-0 bg-[rgba(var(--panel),0.35)]" />
-            </>
-          )}
-
-          <div className="absolute left-3 top-3 flex gap-2">
-            {p.featured ? <span className="panel px-2 py-1 text-b5 accent">RECOMMENDED</span> : null}
-            {(p as any).status ? <span className="panel px-2 py-1 text-b5 muted">{(p as any).status}</span> : null}
-          </div>
-        </div>
-      </div>
-
-      {/* TEXT */}
-      <div className="relative z-10 flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="text-b5 muted">PROJECT</div>
-          <div className="text-h3 mt-2 truncate">{p.title}</div>
-          {p.subtitle ? <p className="text-b3 muted mt-2 line-clamp-2">{p.subtitle}</p> : null}
+        {/* 상단-좌: RECOMMENDED + 상태 칩 */}
+        <div className="absolute top-3 left-3 flex items-center gap-2">
+          {p.featured ? <AccentChip>RECOMMENDED</AccentChip> : null}
+          {status ? <Chip>{status}</Chip> : null}
         </div>
 
-        <div className="shrink-0 flex flex-col items-end gap-2">
+        {/* 상단-우: LIVE 칩 */}
+        <div className="absolute top-3 right-3">
           {p.links?.live ? <AccentChip>LIVE</AccentChip> : <Chip>LOCAL</Chip>}
-          <Chip>{selected ? 'SELECTED' : 'OPEN →'}</Chip>
         </div>
+
+        {/* 중앙: 아이콘 또는 타이틀 폴백 */}
+        {icon ? (
+          <img
+            src={icon}
+            alt={`${p.title} icon`}
+            className="pt-4 h-24 w-24 object-contain opacity-85"
+          />
+        ) : (
+          <span className="text-h3 font-bold select-none" style={{ opacity: 0.08 }}>{p.title}</span>
+        )}
       </div>
 
-      {topBadges.length ? (
-        <div className="relative z-10 mt-5 flex flex-wrap gap-2">
-          {topBadges.map((b) =>
-            b === 'RECOMMENDED' ? <AccentChip key={b}>{b}</AccentChip> : <Chip key={b}>{b}</Chip>,
-          )}
-        </div>
-      ) : null}
+      {/* 하단 정보 영역 */}
+      <div className="flex flex-1 gap-4 p-5 md:p-6">
+        {/* 왼쪽: 텍스트 */}
+        <div className="flex flex-col flex-1 min-w-0">
+          {/* 버전 뱃지 */}
+          {version ? (
+            <div className="mb-2">
+              <span
+                className="px-2 py-0.5 text-b5 rounded border font-medium"
+                style={{
+                  color: 'rgb(var(--accent))',
+                  borderColor: 'rgba(var(--accent), 0.45)',
+                  background: 'rgba(var(--accent), 0.10)',
+                }}
+              >
+                {version}
+              </span>
+            </div>
+          ) : null}
 
-      {keywords.length ? (
-        <div className="relative z-10 mt-4 flex flex-wrap gap-2">
-          {keywords.map((k) => (
-            <Chip key={k}>#{k}</Chip>
-          ))}
+          {/* 제목 */}
+          <div className="text-h4">{p.title}</div>
+          {p.subtitle ? <p className="text-b4 muted mt-1 line-clamp-2">{p.subtitle}</p> : null}
+
+          {/* 역할 */}
+          {role ? (
+            <div className="mt-3 text-b5 muted">
+              <span style={{ color: 'rgb(var(--accent))' }}>// </span>{role}
+            </div>
+          ) : null}
+
+          {/* 키워드 */}
+          {keywords.length ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {keywords.map((k) => <Chip key={k}>#{k}</Chip>)}
+            </div>
+          ) : null}
         </div>
-      ) : null}
+
+        {/* 오른쪽: OPEN 버튼 */}
+        <div className="flex flex-col items-end justify-end shrink-0">
+          <span
+            className="panel px-3 py-1.5 text-b5 transition-opacity duration-150"
+            style={{ opacity: selected ? 1 : 0.5, color: selected ? 'rgb(var(--accent))' : undefined }}
+          >
+            {selected ? '↵ OPEN' : 'OPEN →'}
+          </span>
+        </div>
+      </div>
     </Link>
   )
 })
