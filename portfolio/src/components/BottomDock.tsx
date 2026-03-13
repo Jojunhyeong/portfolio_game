@@ -6,13 +6,13 @@ import { usePathname } from 'next/navigation'
 import React from 'react'
 
 const ITEMS = [
-  { href: '/', label: 'Launcher', icon: '⌂' },
+  { href: '/home', label: 'Launcher', icon: '⌂' },
   { href: '/contents', label: 'Project', icon: '▦' },
   { href: '/patch-notes', label: 'Patch', icon: '⟳' },
 ]
 
 function isActive(pathname: string, href: string) {
-  if (href === '/') return pathname === '/'
+  if (href === '/home') return pathname === '/home'
   return pathname === href || pathname.startsWith(href + '/')
 }
 

@@ -2,13 +2,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+
 import React from 'react'
 
 export default function TopNav() {
-  const pathname = usePathname() ?? '/'
-  const pathLabel = pathname === '/' ? '/home' : pathname
-
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       {/* 상단 HUD haze */}
@@ -20,28 +17,27 @@ export default function TopNav() {
         <div className="hud-bar mt-3">
           {/* LEFT */}
           <div className="flex min-w-0 items-center gap-2">
-            <Link href="/" className="hud-btn">
+            <Link href="/home" className="hud-btn">
               ⛭ Launcher
             </Link>
-            <span className="hud-path hidden md:inline">{pathLabel}</span>
+            <span className="hud-path hidden md:inline text-b5" style={{ letterSpacing: '0.06em' }}>
+              <span style={{ opacity: 0.4, marginRight: '6px' }}>Shortcut:</span>
+              <Link href="/contents" className="hover:text-white/70 transition-colors"><span style={{ color: 'rgb(var(--accent))' }}>C</span> Projects</Link>
+              <span className="mx-1.5 opacity-30">·</span>
+              <Link href="/patch-notes" className="hover:text-white/70 transition-colors"><span style={{ color: 'rgb(var(--accent))' }}>P</span> Patch Notes</Link>
+              <span className="mx-1.5 opacity-30">·</span>
+              <Link href="/home" className="hover:text-white/70 transition-colors"><span style={{ color: 'rgb(var(--accent))' }}>H</span> Home</Link>
+            </span>
           </div>
 
        <div className="hidden md:flex justify-self-center items-center">
-  <span className="hud-chip">
-    <span
-      aria-hidden="true"
-      style={{
-        width: 9,
-        height: 9,
-        borderRadius: 9999,
-        display: 'inline-block',
-        flexShrink: 0,
-        background: '#35ff6a', // ✅ 초록 강제
-        boxShadow: '0 0 10px rgba(53,255,106,.75), 0 0 26px rgba(53,255,106,.35)', // ✅ 글로우
-      }}
-    />
-    ONLINE
-  </span>
+  <span
+                  className="flex items-center gap-1.5 px-2 py-1 text-b5 rounded-md border"
+                  style={{ color: 'rgb(var(--ok))', borderColor: 'rgba(var(--ok),0.35)', background: 'rgba(var(--ok),0.07)' }}
+                >
+                  <span className="blink inline-block w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'rgb(var(--ok))', boxShadow: '0 0 6px rgba(var(--ok),0.8)' }} />
+                  ONLINE
+                </span>
 </div>
 
 

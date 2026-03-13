@@ -17,7 +17,7 @@ export default function GlobalHotkeys() {
 
       if (key === 'c') { e.preventDefault(); routerRef.current.push('/contents'); return }
       if (key === 'p') { e.preventDefault(); routerRef.current.push('/patch-notes'); return }
-      if (key === 'h') { e.preventDefault(); routerRef.current.push('/'); return }
+      if (key === 'h') { e.preventDefault(); routerRef.current.push('/home'); return }
     }
 
     window.addEventListener('keydown', onKeyDown)

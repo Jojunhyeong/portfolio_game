@@ -185,6 +185,17 @@ export async function getProjectsAll(): Promise<ProjectLite[]> {
   })
 }
 
+export async function getProjectsAllFull(): Promise<ProjectFrontMatter[]> {
+  const items = await readMdxDir<ProjectFrontMatter>(PROJECT_DIR)
+  return items
+    .map((it) => ({ ...it.frontMatter, slug: it.frontMatter.slug || it.slug }))
+    .sort((a, b) => {
+      const af = a.featured ? 0 : 1; const bf = b.featured ? 0 : 1
+      if (af !== bf) return af - bf
+      return (a.order ?? 999) - (b.order ?? 999)
+    })
+}
+
 export async function getProjectSlugs(): Promise<string[]> {
   const items = await readMdxDir<ProjectFrontMatter>(PROJECT_DIR)
   return items.map((it) => it.slug)

@@ -33,7 +33,6 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
 
   const recommended = useMemo(() => sorted.filter((p) => p.featured).slice(0, 2), [sorted])
 
-  // RECOMMENDED / ALL 섹션 각자 독립 selected
   const [recSelected, setRecSelected] = useState<number | null>(null)
   const [allSelected, setAllSelected] = useState<number | null>(null)
 
@@ -75,7 +74,10 @@ export default function ProjectSelectGrid({ projects }: { projects: ProjectLite[
         if (item?.slug) router.push(`/contents/${item.slug}`)
         return
       }
-      if (e.key === 'Escape') { e.preventDefault(); router.back() }
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        router.back()
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
@@ -146,13 +148,19 @@ const ProjectCard = forwardRef<
       ref={ref}
       onMouseEnter={onHover}
       className={[
-        'panel panel-glow flex flex-col overflow-hidden focus:outline-none',
+        'panel panel-glow flex flex-col focus:outline-none',
         selected
           ? '-translate-y-1 ring-2 ring-[rgba(var(--accent),0.5)] shadow-[0_0_32px_rgba(var(--accent),0.12)]'
           : 'hover:-translate-y-1',
         'transition-all duration-150',
       ].join(' ')}
     >
+      {/* HUD 코너 브래킷 */}
+      <span className="hud-corner-tl w-3 h-3" />
+      <span className="hud-corner-tr w-3 h-3" />
+      <span className="hud-corner-bl w-3 h-3" />
+      <span className="hud-corner-br w-3 h-3" />
+
       {/* 배너 영역 — 아이콘 중앙 */}
       <div
         className="relative flex items-center justify-center shrink-0 overflow-hidden"
@@ -162,26 +170,25 @@ const ProjectCard = forwardRef<
           borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >
-        {/* 선택 시 배너 글로우 */}
+        {/* 스캔 sweep */}
+        <div className="card-sweep-bar" />
+
         {selected ? (
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(var(--accent),0.08) 0%, transparent 70%)' }}
+            style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(var(--accent),0.10) 0%, transparent 70%)' }}
           />
         ) : null}
 
-        {/* 상단-좌: RECOMMENDED + 상태 칩 */}
         <div className="absolute top-3 left-3 flex items-center gap-2">
           {p.featured ? <AccentChip>RECOMMENDED</AccentChip> : null}
           {status ? <Chip>{status}</Chip> : null}
         </div>
 
-        {/* 상단-우: LIVE 칩 */}
         <div className="absolute top-3 right-3">
           {p.links?.live ? <AccentChip>LIVE</AccentChip> : <Chip>LOCAL</Chip>}
         </div>
 
-        {/* 중앙: 아이콘 또는 타이틀 폴백 */}
         {icon ? (
           <img
             src={icon}
@@ -195,9 +202,7 @@ const ProjectCard = forwardRef<
 
       {/* 하단 정보 영역 */}
       <div className="flex flex-1 gap-4 p-5 md:p-6">
-        {/* 왼쪽: 텍스트 */}
         <div className="flex flex-col flex-1 min-w-0">
-          {/* 버전 뱃지 */}
           {version ? (
             <div className="mb-2">
               <span
@@ -213,18 +218,15 @@ const ProjectCard = forwardRef<
             </div>
           ) : null}
 
-          {/* 제목 */}
           <div className="text-h4">{p.title}</div>
           {p.subtitle ? <p className="text-b4 muted mt-1 line-clamp-2">{p.subtitle}</p> : null}
 
-          {/* 역할 */}
           {role ? (
             <div className="mt-3 text-b5 muted">
               <span style={{ color: 'rgb(var(--accent))' }}>// </span>{role}
             </div>
           ) : null}
 
-          {/* 키워드 */}
           {keywords.length ? (
             <div className="mt-3 flex flex-wrap gap-2">
               {keywords.map((k) => <Chip key={k}>#{k}</Chip>)}
@@ -232,7 +234,6 @@ const ProjectCard = forwardRef<
           ) : null}
         </div>
 
-        {/* 오른쪽: OPEN 버튼 */}
         <div className="flex flex-col items-end justify-end shrink-0">
           <span
             className="panel px-3 py-1.5 text-b5 transition-opacity duration-150"
