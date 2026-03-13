@@ -44,12 +44,7 @@ export default function FeaturedProjects({ items }: { items: FeaturedProject[] }
             {/* MISSION 레이블 + 아이콘 */}
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex flex-col gap-1">
-                <div
-                  className="text-b5 font-bold"
-                  style={{ color: 'rgba(var(--accent-2), 0.75)', letterSpacing: '0.12em', fontSize: '11px' }}
-                >
-                  MISSION
-                </div>
+                
                 <div className="flex items-center gap-2 flex-wrap">
                   {p.version ? (
                     <span

@@ -231,6 +231,7 @@ export default function StartMenu() {
                 <br />
                 협업 과정에서는 팀과 <span className="accent">문제를 함께 정의</span>하고,
                 새로운 시도를 <span className="accent">코드로 검증</span>하는 과정을 중요하게 여깁니다.
+                <br/>이러한 경험과 고민을 <span className="accent">기록</span>으로 남기며 변화를 정리해 왔습니다.
               </p>
 
               {/* 서브 스택 칩 */}
